@@ -481,6 +481,15 @@ const OsmBase = {
 };
 
 let base = null;
+/* Google calls this if the key is rejected (bad key, API not enabled, wrong website restriction):
+   swap in the OpenStreetMap base map so the page never shows a broken map. */
+window.gm_authFailure = () => {
+  console.warn("Google Maps rejected the API key; using OpenStreetMap instead.");
+  const old = $("#map"), fresh = document.createElement("div");
+  fresh.id = "map"; fresh.setAttribute("role", "region"); fresh.setAttribute("aria-label", old.getAttribute("aria-label"));
+  old.replaceWith(fresh); overlays = []; base = null;
+  OsmBase.init().then(() => { base = OsmBase; drawDay(); fitDay(); });
+};
 const mapReady = (GOOGLE_MAPS_API_KEY ? GoogleBase.init().then(() => GoogleBase) : Promise.reject())
   .catch(() => OsmBase.init().then(() => OsmBase))
   .then(b => { base = b; drawDay(); fitDay(); })
