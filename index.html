@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Paris Trip Planner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Jost:wght@400;500;600&display=swap">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+img { max-width: 100%; }
+/* Layout: day tabs on top, then itinerary timeline (left) beside a sticky hand-drawn map of Paris (right); stacks on phones. */
+:root {
+  --bg: #f3f4f1;          /* limestone, faintly green */
+  --surface: #ffffff;
+  --ink: #18201d;
+  --muted: #5d6863;
+  --line: #d9ddd7;
+  --accent: #1f5b4a;      /* Paris bench / kiosk green */
+  --accent-ink: #ffffff;
+  --map-land: #e9ebe4;
+  --map-arr: #c9cfc6;
+  --map-label: #9aa39c;
+  --water: #9cc3d3;
+  --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --font-body: "Jost", "Futura", "Century Gothic", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121715; --surface: #1a211e; --ink: #e8ece8; --muted: #9ba7a1; --line: #2c3632;
+    --accent: #6fbf9f; --accent-ink: #0c1411;
+    --map-land: #1f2724; --map-arr: #34403b; --map-label: #5c6a64; --water: #2c5566;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121715; --surface: #1a211e; --ink: #e8ece8; --muted: #9ba7a1; --line: #2c3632;
+  --accent: #6fbf9f; --accent-ink: #0c1411;
+  --map-land: #1f2724; --map-arr: #34403b; --map-label: #5c6a64; --water: #2c5566;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+.wrap { max-width: 900px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; display: grid; gap: 22px; }
+
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 6vw, 54px); line-height: 1.02; margin: 0; text-wrap: balance; }
+h1 em { font-weight: 500; color: var(--accent); }
+.hotel { display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); min-width: 0; }
+.hotel b { color: var(--ink); font-weight: 500; }
+.hpin { flex: none; width: 28px; height: 28px; border-radius: 6px; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 600; font-size: 14px; }
+.sample { font-size: 13px; color: var(--muted); border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; margin: 0; }
+
+nav.days { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 8px; }
+@media (max-width: 520px) { nav.days { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+nav.days button { min-width: 0; font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 8px 16px 8px 8px; display: flex; align-items: center; gap: 10px; text-align: left; }
+nav.days button .n { width: 30px; height: 30px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; font-weight: 600; font-variant-numeric: tabular-nums; }
+nav.days button .n { flex: none; }
+nav.days button .t { display: grid; line-height: 1.15; min-width: 0; }
+nav.days button .t small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+nav.days button { border-radius: 14px; padding: 8px 12px 8px 8px; }
+nav.days button .t small { color: var(--muted); font-size: 12px; }
+nav.days button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+nav.days button[aria-selected="true"] .n { background: var(--accent-ink); color: var(--accent); }
+nav.days button[aria-selected="true"] .t small { color: inherit; opacity: .8; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; max-width: 860px; width: 100%; margin: 0 auto; }
+
+.dayhead { display: grid; gap: 2px; margin-bottom: 14px; }
+.dayhead h2 { font-family: var(--font-display); font-weight: 500; font-style: italic; font-size: 30px; line-height: 1.1; margin: 0; text-wrap: balance; }
+.dayhead p { margin: 0; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+
+ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
+.ev { display: grid; grid-template-columns: 56px 36px minmax(0, 1fr); column-gap: 10px; }
+@media (max-width: 480px) { .ev { grid-template-columns: 46px 30px minmax(0, 1fr); column-gap: 8px; } .time { font-size: 14px; } .body h3 { font-size: 17px; } .dot { width: 26px; height: 26px; } }
+.time { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 15px; padding-top: 6px; text-align: right; }
+.time small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+.rail { position: relative; display: flex; justify-content: center; }
+.rail::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-1px); background: var(--line); }
+.ev:first-child .rail::before { top: 18px; }
+.ev:last-child .rail::before { bottom: calc(100% - 18px); }
+.dot { position: relative; z-index: 1; margin-top: 4px; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; }
+.dot.h { border-radius: 6px; }
+.body { padding-block: 4px 18px; min-width: 0; }
+.stop { cursor: pointer; border-radius: 10px; padding: 2px 8px 6px; margin-left: -8px; transition: background .15s; }
+.stop:hover, .stop.hl { background: var(--surface); }
+.stop.hl .dot, .ev.hl .dot { background: var(--accent); color: var(--accent-ink); }
+.body h3 { margin: 0; font-size: 18px; font-weight: 500; line-height: 1.3; }
+.body .meta { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.body .note { margin: 4px 0 0; font-size: 14px; max-width: 60ch; }
+
+.leg .rail .glyph { position: relative; z-index: 1; margin-top: 6px; }
+.leg .body { padding-block: 6px 16px; }
+.legcard { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 14px; color: var(--muted); }
+.legcard .how { color: var(--ink); }
+.legcard a { color: var(--accent); font-size: 13px; text-decoration: none; border-bottom: 1px solid currentColor; }
+.badge { flex: none; white-space: nowrap; display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1; }
+.badge.walk { background: var(--bg); border: 1px dashed var(--muted); color: var(--muted); }
+.badge.bus { border-radius: 4px; background: #2f6fb3; color: #fff; }
+.badge.rer { border-radius: 5px; }
+.mins { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.mapcol { display: grid; gap: 10px; }
+.maphead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+.maphead h2 { font-family: var(--font-display); font-weight: 500; font-style: italic; font-size: 24px; margin: 0; }
+.gmaps { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--accent-ink); text-decoration: none; font-weight: 500; font-size: 15px; padding: 10px 16px; border-radius: 10px; }
+.gmaps:hover { filter: brightness(1.08); }
+.mapbox { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 10; max-width: 100%; }
+@media (max-width: 600px) { .mapbox { aspect-ratio: 1 / 1; } }
+#gframe { display: block; width: 100%; height: 100%; border: 0; background: var(--bg); }
+.maptip { margin: 0; font-size: 13px; color: var(--muted); }
+.linkbtn { font: inherit; background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; }
+#map { display: block; background: var(--bg); width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#map.drag { cursor: grabbing; }
+.ctrls { position: absolute; top: 10px; right: 10px; display: grid; gap: 6px; }
+.ctrls button { font: inherit; font-size: 16px; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+.ctrls button.wide { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 22px; height: 0; border-top: 3px solid var(--ink); }
+.legend i.w { border-top: 3px dotted var(--muted); }
+
+svg text { font-family: var(--font-body); }
+.arr { fill: var(--map-land); stroke: var(--map-arr); }
+.arrlbl { fill: var(--map-label); font-weight: 500; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+.water { fill: none; stroke: var(--water); stroke-linecap: round; stroke-linejoin: round; }
+.mk { cursor: pointer; }
+.mk circle, .mk rect { fill: var(--ink); stroke: var(--surface); }
+.mk text { fill: var(--surface); font-weight: 600; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.mk.hl circle, .mk.hl rect { fill: var(--accent); }
+.mk.hl text { fill: var(--accent-ink); }
+.mklbl { fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-linejoin: round; font-weight: 500; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <p class="eyebrow" id="dates"></p>
+      <h1 id="title"></h1>
+    </div>
+    <div class="hotel"><span class="hpin">H</span><span id="hotel"></span></div>
+  </header>
+  <p class="sample" id="sample" hidden>This is a sample itinerary. Send Claude your hotel, dates and the places you want to see, and it will be replaced with your real plan.</p>
+
+  <nav class="days" id="days" role="tablist" aria-label="Trip days"></nav>
+
+  <main>
+    <section aria-live="polite">
+      <div class="dayhead"><h2 id="dayTitle"></h2><p id="daySum"></p></div>
+      <ol class="tl" id="tl"></ol>
+    </section>
+    <aside class="mapcol">
+      <div class="maphead">
+        <h2>Today on the map</h2>
+        <a class="gmaps" id="gmaps" href="#" target="_blank" rel="noopener">Open this day in Google Maps ↗</a>
+      </div>
+      <div class="mapbox">
+        <iframe id="gframe" title="Google Map of this day's route" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+      <p class="maptip" id="maptip">Showing the whole day's route. Tap a stop in the itinerary to zoom the map to it.</p>
+    </aside>
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   YOUR TRIP — edit this object to change everything on the page.
+   Times are calculated for you: each day starts at `start`,
+   then adds each leg's `min` (travel) and each stop's `stay`.
+   modes: "metro" | "rer" | "bus" | "walk"
+   ============================================================ */
+const TRIP = {
+  title: "Paris",
+  dates: "Sample 4-day itinerary",
+  isSample: true,
+  hotel: { name: "Hotel in Le Marais", area: "near Saint-Paul metro (line 1)", lat: 48.8551, lon: 2.3612 },
+  days: [
+    {
+      title: "Islands & the Left Bank",
+      start: "09:00",
+      stops: [
+        { name: "Notre-Dame de Paris", lat: 48.8530, lon: 2.3499, stay: 75,
+          go: { mode: "walk", min: 12, how: "Walk across Pont Louis-Philippe" },
+          note: "Reopened Dec 2024. Entry is free; book a time slot online to skip the line." },
+        { name: "Sainte-Chapelle", lat: 48.8554, lon: 2.3450, stay: 60,
+          go: { mode: "walk", min: 6, how: "Walk along Rue de la Cité" },
+          note: "Go on a sunny morning for the stained glass. Timed tickets." },
+        { name: "Musée d'Orsay", lat: 48.8600, lon: 2.3266, stay: 150,
+          go: { mode: "rer", line: "C", min: 14, from: "Saint-Michel Notre-Dame", to: "Musée d'Orsay" },
+          note: "Impressionists on level 5. Lunch at Café Campana inside." },
+        { name: "Saint-Germain-des-Prés", lat: 48.8540, lon: 2.3334, stay: 60,
+          go: { mode: "walk", min: 11, how: "Walk down Rue du Bac" },
+          note: "Coffee at Les Deux Magots or Café de Flore." },
+        { name: "Jardin du Luxembourg", lat: 48.8462, lon: 2.3372, stay: 60,
+          go: { mode: "walk", min: 12, how: "Walk via Place Saint-Sulpice" } },
+        { name: "Panthéon", lat: 48.8462, lon: 2.3464, stay: 45,
+          go: { mode: "walk", min: 8, how: "Walk up Rue Soufflot" } }
+      ],
+      back: { mode: "walk", min: 24, how: "Walk via Pont de Sully" }
+    },
+    {
+      title: "From the Louvre to the Eiffel Tower",
+      start: "08:45",
+      stops: [
+        { name: "Musée du Louvre", lat: 48.8606, lon: 2.3376, stay: 180,
+          go: { mode: "metro", line: "1", min: 14, from: "Saint-Paul", to: "Palais Royal–Musée du Louvre" },
+          note: "Book the 9:00 slot. Enter through the Carrousel entrance for shorter lines." },
+        { name: "Jardin des Tuileries", lat: 48.8635, lon: 2.3275, stay: 45,
+          go: { mode: "walk", min: 8, how: "Walk through the Carrousel arch" } },
+        { name: "Arc de Triomphe", lat: 48.8738, lon: 2.2950, stay: 60,
+          go: { mode: "metro", line: "1", min: 12, from: "Concorde", to: "Charles de Gaulle–Étoile" },
+          note: "Climb the 284 steps to the rooftop for the view down the Champs-Élysées." },
+        { name: "Trocadéro", lat: 48.8616, lon: 2.2893, stay: 30,
+          go: { mode: "metro", line: "6", min: 10, from: "Charles de Gaulle–Étoile", to: "Trocadéro" },
+          note: "Best photo spot for the tower." },
+        { name: "Eiffel Tower", lat: 48.8584, lon: 2.2945, stay: 120,
+          go: { mode: "walk", min: 12, how: "Walk across Pont d'Iéna" },
+          note: "Summit tickets sell out; book on the official site." },
+        { name: "Seine cruise (Bateaux Parisiens)", gq: "Bateaux Parisiens, Port de la Bourdonnais, Paris", lat: 48.8597, lon: 2.2927, stay: 60,
+          go: { mode: "walk", min: 5, how: "Walk to Port de la Bourdonnais" },
+          note: "Time it for sunset. The tower sparkles for 5 minutes every hour after dark." }
+      ],
+      back: { mode: "rer", line: "C", min: 30, from: "Champ de Mars–Tour Eiffel", to: "Saint-Michel", how: "then walk 10 min" }
+    },
+    {
+      title: "Opéra & Montmartre",
+      start: "09:30",
+      stops: [
+        { name: "Palais Garnier", lat: 48.8720, lon: 2.3316, stay: 75,
+          go: { mode: "metro", line: "8", min: 20, from: "Bastille", to: "Opéra", how: "Walk 5 min to Bastille first" },
+          note: "Self-guided visit; the Chagall ceiling is in the auditorium." },
+        { name: "Galeries Lafayette rooftop", lat: 48.8738, lon: 2.3320, stay: 60,
+          go: { mode: "walk", min: 4, how: "Walk up Boulevard Haussmann" },
+          note: "Free rooftop terrace, open during store hours." },
+        { name: "Abbesses (lunch)", gq: "Place des Abbesses, Paris", lat: 48.8845, lon: 2.3385, stay: 60,
+          go: { mode: "metro", line: "12", min: 18, from: "Trinité–d'Estienne d'Orves", to: "Abbesses" },
+          note: "Abbesses is a deep station: take the lift, not the 200 stairs." },
+        { name: "Sacré-Cœur", lat: 48.8867, lon: 2.3431, stay: 60,
+          go: { mode: "walk", min: 8, how: "Walk up, or take the funicular with a metro ticket" } },
+        { name: "Place du Tertre", lat: 48.8865, lon: 2.3408, stay: 40,
+          go: { mode: "walk", min: 3, how: "Walk along Rue Norvins" } },
+        { name: "Dinner in South Pigalle", gq: "Rue des Martyrs, Paris", lat: 48.8800, lon: 2.3375, stay: 90,
+          go: { mode: "walk", min: 14, how: "Walk down past the Moulin Rouge" } }
+      ],
+      back: { mode: "metro", line: "12", min: 30, from: "Pigalle", to: "Concorde", how: "then line 1 to Saint-Paul" }
+    },
+    {
+      title: "Le Marais & Canal Saint-Martin",
+      start: "10:00",
+      stops: [
+        { name: "Place des Vosges", lat: 48.8556, lon: 2.3655, stay: 30,
+          go: { mode: "walk", min: 6, how: "Walk along Rue Saint-Antoine" },
+          note: "Victor Hugo's house is in the corner, free to visit." },
+        { name: "Musée Picasso", lat: 48.8598, lon: 2.3622, stay: 90,
+          go: { mode: "walk", min: 7, how: "Walk up Rue de Turenne" } },
+        { name: "Marché des Enfants Rouges", lat: 48.8628, lon: 2.3618, stay: 60,
+          go: { mode: "walk", min: 5, how: "Walk to Rue de Bretagne" },
+          note: "Oldest covered market in Paris. Get there before 12:30 for a seat." },
+        { name: "Centre Pompidou", lat: 48.8607, lon: 2.3522, stay: 120,
+          go: { mode: "walk", min: 12, how: "Walk via Rue Rambuteau" },
+          note: "Check opening status: the building is closing for renovation in stages." },
+        { name: "Canal Saint-Martin", lat: 48.8710, lon: 2.3650, stay: 75,
+          go: { mode: "metro", line: "11", min: 15, from: "Rambuteau", to: "République", how: "then walk 8 min" },
+          note: "Walk the iron footbridges; picnic on the quai at sunset." }
+      ],
+      back: { mode: "metro", line: "5", min: 22, from: "Jacques Bonsergent", to: "Bastille", how: "then walk 6 min" }
+    }
+  ]
+};
+
+/* Official RATP line colours */
+const LINE_COLORS = {
+  "1": ["#FFCD00", "#1a1a1a"], "2": ["#003CA6", "#fff"], "3": ["#837902", "#fff"], "4": ["#CF009E", "#fff"],
+  "5": ["#FF7E2E", "#1a1a1a"], "6": ["#6ECA97", "#1a1a1a"], "7": ["#FA9ABA", "#1a1a1a"], "8": ["#E19BDF", "#1a1a1a"],
+  "9": ["#B6BD00", "#1a1a1a"], "10": ["#C9910D", "#1a1a1a"], "11": ["#704B1C", "#fff"], "12": ["#007852", "#fff"],
+  "13": ["#6EC4E8", "#1a1a1a"], "14": ["#62259D", "#fff"],
+  "A": ["#E2231A", "#fff"], "B": ["#7BA3DC", "#1a1a1a"], "C": ["#F3D311", "#1a1a1a"], "D": ["#00814F", "#fff"], "E": ["#C04191", "#fff"]
+};
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+const fmt = m => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
+const dur = m => m < 60 ? m + " min" : Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) : "");
+const MODE_WORD = { metro: "Metro", rer: "RER", bus: "Bus", walk: "Walk" };
+const dirUrl = (a, b, mode) => `https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=${mode === "walk" ? "walking" : "transit"}`;
+const routeUrl = pts => "https://www.google.com/maps/dir/" + pts.map(p => p === TRIP.hotel ? p.lat + "," + p.lon : encodeURIComponent(p.gq || p.name + ", Paris")).join("/");
+const placeUrl = p => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " Paris")}`;
+
+function legColor(go) {
+  if (go.mode === "walk") return null;
+  if (go.mode === "bus") return "#2f6fb3";
+  return (LINE_COLORS[go.line] || ["#555", "#fff"])[0];
+}
+function badge(go) {
+  if (go.mode === "walk") return `<span class="badge walk" title="Walk">⋯</span>`;
+  if (go.mode === "bus") return `<span class="badge bus" title="Bus ${esc(go.line)}">${esc(go.line || "Bus")}</span>`;
+  const [bg, fg] = LINE_COLORS[go.line] || ["#555", "#fff"];
+  return `<span class="badge ${go.mode}" style="background:${bg};color:${fg}" title="${MODE_WORD[go.mode]} ${esc(go.line)}">${go.mode === "rer" ? "RER " : ""}${esc(go.line)}</span>`;
+}
+
+/* Build the schedule for a day: hotel → stops → hotel, with clock times */
+function schedule(day) {
+  const H = TRIP.hotel;
+  let t = toMin(day.start);
+  const rows = [{ type: "hotel", label: "Depart hotel", t, place: H }];
+  let prev = H;
+  day.stops.forEach((s, i) => {
+    rows.push({ type: "leg", go: s.go, from: prev, to: s, t });
+    t += s.go.min;
+    rows.push({ type: "stop", n: i + 1, stop: s, t, until: t + s.stay });
+    t += s.stay;
+    prev = s;
+  });
+  if (day.back) {
+    rows.push({ type: "leg", go: day.back, from: prev, to: H, t });
+    t += day.back.min;
+    rows.push({ type: "hotel", label: "Back at hotel", t, place: H });
+  }
+  return rows;
+}
+
+/* ---------- header + tabs ---------- */
+$("#title").innerHTML = esc(TRIP.title) + " <em>itinerary</em>";
+$("#dates").textContent = TRIP.dates;
+$("#hotel").innerHTML = `<b>${esc(TRIP.hotel.name)}</b><br>${esc(TRIP.hotel.area || "")}`;
+$("#sample").hidden = !TRIP.isSample;
+
+const tabs = $("#days");
+TRIP.days.forEach((d, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.id = "tab" + i; b.setAttribute("role", "tab");
+  b.innerHTML = `<span class="n">${i + 1}</span><span class="t">Day ${i + 1}<small>${esc(d.date || d.title)}</small></span>`;
+  b.addEventListener("click", () => select(i));
+  tabs.appendChild(b);
+});
+tabs.addEventListener("keydown", e => {
+  if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+  const n = TRIP.days.length, i = (cur + (e.key === "ArrowRight" ? 1 : n - 1)) % n;
+  select(i); $("#tab" + i).focus();
+});
+
+/* ---------- timeline ---------- */
+function renderTimeline(day) {
+  const rows = schedule(day);
+  const stops = day.stops.length, travel = rows.filter(r => r.type === "leg").reduce((a, r) => a + r.go.min, 0);
+  $("#dayTitle").textContent = day.title;
+  $("#daySum").textContent = `${fmt(rows[0].t)} – ${fmt(rows[rows.length - 1].t)} · ${stops} stops · ${dur(travel)} getting around`;
+  $("#tl").innerHTML = rows.map(r => {
+    if (r.type === "hotel") return `
+      <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">H</span></div>
+      <div class="body"><h3>${esc(r.label)}</h3><div class="meta">${esc(TRIP.hotel.name)}</div></div></li>`;
+    if (r.type === "leg") {
+      const g = r.go;
+      const route = g.from ? `${esc(g.from)} → ${esc(g.to)}` : esc(g.how || "Walk");
+      const extra = g.from && g.how ? ` · ${esc(g.how)}` : "";
+      return `
+      <li class="ev leg"><div class="time"></div><div class="rail"><span class="glyph">${badge(g)}</span></div>
+      <div class="body"><div class="legcard"><span class="how">${MODE_WORD[g.mode]}${g.line && g.mode !== "walk" ? " " + esc(g.line) : ""}</span>
+      <span>${route}${extra}</span><span class="mins">${g.min} min</span>
+      <a href="${dirUrl(r.from, r.to, g.mode)}" target="_blank" rel="noopener">Directions</a></div></div></li>`;
+    }
+    const s = r.stop;
+    return `
+      <li class="ev"><div class="time">${fmt(r.t)}<small>arrive</small></div><div class="rail"><span class="dot">${r.n}</span></div>
+      <div class="body"><div class="stop" data-n="${r.n}" tabindex="0">
+        <h3>${esc(s.name)}</h3>
+        <div class="meta">${dur(s.stay)} here · leave at ${fmt(r.until)} · <a href="${placeUrl(s)}" target="_blank" rel="noopener" style="color:inherit">map</a></div>
+        ${s.note ? `<p class="note">${esc(s.note)}</p>` : ""}
+      </div></div></li>`;
+  }).join("");
+  $("#tl").querySelectorAll(".stop").forEach(el => {
+    const n = +el.dataset.n;
+            el.addEventListener("keydown", e => { if (e.key === "Enter") el.click(); });
+        el.addEventListener("click", e => { if (e.target.closest("a")) return; hl = -1; highlight(n); centerOn(day.stops[n - 1], n); });
+  });
+}
+
+/* ---------- Google map (keyless embed) ---------- */
+let cur = 0, hl = 0;
+const gq = p => p === TRIP.hotel ? p.lat + "," + p.lon : (p.gq || p.name + ", Paris");
+function dayEmbed(d) {
+  const pts = [...d.stops, ...(d.back ? [TRIP.hotel] : [])];
+  return "https://maps.google.com/maps?saddr=" + encodeURIComponent(gq(TRIP.hotel)) +
+    "&daddr=" + pts.map(p => encodeURIComponent(gq(p))).join("+to:") + "&dirflg=w&output=embed";
+}
+const placeEmbed = p => "https://maps.google.com/maps?q=" + encodeURIComponent(gq(p)) + "&z=16&output=embed";
+function showDayMap() {
+  $("#gframe").src = dayEmbed(TRIP.days[cur]);
+  $("#maptip").innerHTML = "Showing the whole day's route (walking view; use the itinerary for metro times). Tap a stop to zoom the map to it.";
+}
+function centerOn(p, n) {
+  $("#gframe").src = placeEmbed(p);
+  $("#maptip").innerHTML = `Showing stop ${n}: ${esc(p.name)}. <button type="button" class="linkbtn" id="backroute">Show the whole day again</button>`;
+  $("#backroute").addEventListener("click", () => { showDayMap(); highlight(0); });
+}
+function highlight(n) {
+  if (n === hl) return;
+  hl = n;
+  document.querySelectorAll(".stop").forEach(e => e.classList.toggle("hl", +e.dataset.n === n));
+}
+function fitDay() { showDayMap(); }
+
+/* ---------- select a day ---------- */
+function select(i, animate = true) {
+  cur = i; hl = 0;
+  tabs.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-selected", j === i));
+  renderTimeline(TRIP.days[i]);
+  fitDay(animate);
+  const d = TRIP.days[i];
+  $("#gmaps").href = routeUrl([TRIP.hotel, ...d.stops, ...(d.back ? [TRIP.hotel] : [])]);
+  try { localStorage.setItem("paris-day", i); } catch (e) {}
+  try { history.replaceState(null, "", "#day" + (i + 1)); } catch (e) {}
+}
+
+let start = 0;
+const m = location.hash.match(/^#day(\d+)$/);
+if (m && +m[1] >= 1 && +m[1] <= TRIP.days.length) start = +m[1] - 1;
+else { try { const v = +localStorage.getItem("paris-day"); if (v >= 0 && v < TRIP.days.length) start = v; } catch (e) {} }
+select(start, false);
+</script>
+
+</body>
+</html>
