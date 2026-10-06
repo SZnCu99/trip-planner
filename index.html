@@ -88,6 +88,9 @@ ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 .ev:last-child .rail::before { bottom: calc(100% - 18px); }
 .dot { position: relative; z-index: 1; margin-top: 4px; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; }
 .dot.h { border-radius: 6px; }
+.dot.open, .dot.tbd { background: var(--bg); color: var(--muted); border: 2px dashed var(--muted); }
+.body h3.muted { color: var(--muted); font-style: italic; font-weight: 400; }
+.pin.tbd { background: #fff; color: #5d6863; border: 2px dashed #5d6863; }
 .body { padding-block: 4px 18px; min-width: 0; }
 .stop { cursor: pointer; border-radius: 10px; padding: 2px 8px 6px; margin-left: -8px; transition: background .15s; }
 .stop:hover, .stop.hl { background: var(--surface); }
@@ -217,29 +220,17 @@ const TRIP = {
       back: { mode: "rer", line: "C", min: 45, from: "Saint-Michel Notre-Dame", to: "Pereire–Levallois", how: "train toward Pontoise; walk 8 min to the station and 10 min to the hotel" }
     },
     {
-      title: "From the Louvre to the Eiffel Tower",
-      sample: true,
-      start: "08:45",
+      title: "Brunch & the Louvre",
+      start: "09:00",
       stops: [
-        { name: "Musée du Louvre", lat: 48.8606, lon: 2.3376, stay: 180,
-          go: { mode: "metro", line: "1", min: 14, from: "Saint-Paul", to: "Palais Royal–Musée du Louvre" },
-          note: "Book the 9:00 slot. Enter through the Carrousel entrance for shorter lines." },
-        { name: "Jardin des Tuileries", lat: 48.8635, lon: 2.3275, stay: 45,
-          go: { mode: "walk", min: 8, how: "Walk through the Carrousel arch" } },
-        { name: "Arc de Triomphe", lat: 48.8738, lon: 2.2950, stay: 60,
-          go: { mode: "metro", line: "1", min: 12, from: "Concorde", to: "Charles de Gaulle–Étoile" },
-          note: "Climb the 284 steps to the rooftop for the view down the Champs-Élysées." },
-        { name: "Trocadéro", lat: 48.8616, lon: 2.2893, stay: 30,
-          go: { mode: "metro", line: "6", min: 10, from: "Charles de Gaulle–Étoile", to: "Trocadéro" },
-          note: "Best photo spot for the tower." },
-        { name: "Eiffel Tower", lat: 48.8584, lon: 2.2945, stay: 120,
-          go: { mode: "walk", min: 12, how: "Walk across Pont d'Iéna" },
-          note: "Summit tickets sell out; book on the official site." },
-        { name: "Seine cruise (Bateaux Parisiens)", gq: "Bateaux Parisiens, Port de la Bourdonnais, Paris", lat: 48.8597, lon: 2.2927, stay: 60,
-          go: { mode: "walk", min: 5, how: "Walk to Port de la Bourdonnais" },
-          note: "Time it for sunset. The tower sparkles for 5 minutes every hour after dark." }
+        { name: "Brunch (place not decided yet)", tbd: true, gq: "Palais-Royal, Paris", lat: 48.8638, lon: 2.3370, stay: 75,
+          go: { mode: "metro", line: "3", min: 30, from: "Porte de Champerret", to: "Opéra", how: "then Metro 7 to Palais Royal–Musée du Louvre" },
+          note: "Placeholder near the Louvre so the timing works. Pick a spot around Palais-Royal or Rue Saint-Honoré and tell Claude." },
+        { name: "Musée du Louvre", lat: 48.8606, lon: 2.3376, at: "11:00", stay: 180,
+          go: { mode: "walk", min: 8, how: "Walk through the Palais-Royal gardens" },
+          note: "Timed entry at 11:00; book on the Louvre website. Closed Tuesdays." }
       ],
-      back: { mode: "rer", line: "C", min: 30, from: "Champ de Mars–Tour Eiffel", to: "Saint-Michel", how: "then walk 10 min" }
+      open: "The rest of the day is still open."
     },
     {
       title: "Opéra & Montmartre",
@@ -349,6 +340,7 @@ function schedule(day) {
     t = rows[rows.length - 1].until = t + s.stay;
     prev = s;
   });
+  if (day.open) rows.push({ type: "open", label: day.open, t });
   if (day.back) {
     rows.push({ type: "leg", go: day.back, from: prev, to: H, t });
     t += day.back.min;
@@ -387,6 +379,9 @@ function renderTimeline(day) {
     if (r.type === "hotel") return `
       <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">H</span></div>
       <div class="body"><h3>${esc(r.label)}</h3><div class="meta">${esc(TRIP.hotel.name)}</div></div></li>`;
+    if (r.type === "open") return `
+      <li class="ev"><div class="time"></div><div class="rail"><span class="dot open">…</span></div>
+      <div class="body"><h3 class="muted">${esc(r.label)}</h3><div class="meta">Tell Claude what you'd like to add.</div></div></li>`;
     if (r.type === "start") return `
       <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">${esc(r.place.pin || "▸")}</span></div>
       <div class="body"><h3>${esc(r.label)}</h3>${r.note ? `<div class="meta">${esc(r.note)}</div>` : ""}</div></li>`;
@@ -402,7 +397,7 @@ function renderTimeline(day) {
     }
     const s = r.stop, fixed = s.at ? " · booked for " + s.at : "";
     return `
-      <li class="ev"><div class="time">${fmt(r.t)}<small>arrive</small></div><div class="rail"><span class="dot${s.hotel ? " h" : ""}">${r.label}</span></div>
+      <li class="ev"><div class="time">${fmt(r.t)}<small>arrive</small></div><div class="rail"><span class="dot${s.hotel ? " h" : ""}${s.tbd ? " tbd" : ""}">${r.label}</span></div>
       <div class="body"><div class="stop" data-n="${r.n}" tabindex="0">
         <h3>${esc(s.name)}</h3>
         <div class="meta">${dur(r.until - r.t)} here${fixed} · leave at ${fmt(r.until)} · <a href="${s.hotel ? `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}` : placeUrl(s)}" target="_blank" rel="noopener" style="color:inherit">map</a></div>
@@ -423,7 +418,7 @@ let overlays = [];                  // things drawn for the current day
 
 function pinEl(label, isHotel) {
   const d = document.createElement("div");
-  d.className = "pin" + (isHotel ? " h" : "");
+  d.className = "pin" + (isHotel === true ? " h" : isHotel === "tbd" ? " tbd" : "");
   d.textContent = label;
   return d;
 }
@@ -506,7 +501,7 @@ function drawDay() {
     base.line(seq[i - 1].p, seq[i].p, legColor(seq[i].go), !legColor(seq[i].go), day.back && i === seq.length - 1);
   const hp = pinEl("H", true); pins.set(0, hp); base.marker(TRIP.hotel, hp, 0);
   if (day.from) base.marker(day.from, pinEl(day.from.pin || "▸", true), 0);
-  day.stops.forEach((s, i) => { if (s.hotel) return; const el = pinEl(stopLabel(day, i)); pins.set(i + 1, el); base.marker(s, el, i + 1); });
+  day.stops.forEach((s, i) => { if (s.hotel) return; const el = pinEl(stopLabel(day, i), s.tbd ? "tbd" : false); pins.set(i + 1, el); base.marker(s, el, i + 1); });
   pins.forEach((el, n) => el.classList.toggle("hl", n === hl && n > 0));
 }
 function centerOn(p) { base?.focus(p); }
