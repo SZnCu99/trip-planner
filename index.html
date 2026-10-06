@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Jost:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; -webkit-font-smoothing: antialiased; }
@@ -112,7 +114,12 @@ ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 .gmaps:hover { filter: brightness(1.08); }
 .mapbox { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 10; max-width: 100%; }
 @media (max-width: 600px) { .mapbox { aspect-ratio: 1 / 1; } }
-#gframe { display: block; width: 100%; height: 100%; border: 0; background: var(--bg); }
+#map { position: absolute; inset: 0; background: var(--bg); }
+.mapbox .ctrls { z-index: 500; }
+.pin { width: 28px; height: 28px; border-radius: 50%; background: #18201d; color: #fff; border: 2px solid #fff; display: grid; place-items: center; font: 600 13px/1 var(--font-body); box-shadow: 0 1px 4px rgba(0,0,0,.35); cursor: pointer; transition: transform .15s; }
+.pin.h { border-radius: 7px; }
+.pin.hl { background: var(--accent); color: var(--accent-ink); transform: scale(1.25); }
+.leaflet-div-icon { background: none; border: 0; }
 .maptip { margin: 0; font-size: 13px; color: var(--muted); }
 .linkbtn { font: inherit; background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; }
 #map { display: block; background: var(--bg); width: 100%; height: 100%; touch-action: none; cursor: grab; }
@@ -164,9 +171,14 @@ svg text { font-family: var(--font-body); }
         <a class="gmaps" id="gmaps" href="#" target="_blank" rel="noopener">Open this day in Google Maps ↗</a>
       </div>
       <div class="mapbox">
-        <iframe id="gframe" title="Google Map of this day's route" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        <div id="map" role="region" aria-label="Map of this day's stops"></div>
+        <div class="ctrls"><button id="zfit" class="wide" type="button" aria-label="Show all of this day's stops">Fit</button></div>
       </div>
-      <p class="maptip" id="maptip">Showing the whole day's route. Tap a stop in the itinerary to zoom the map to it.</p>
+      <div class="legend">
+        <span><i></i>Metro / RER / bus (line colour)</span>
+        <span><i class="w"></i>Walk</span>
+        <span>Lines connect stops in order; they are not the exact street route.</span>
+      </div>
     </aside>
   </main>
 </div>
@@ -277,6 +289,12 @@ const TRIP = {
   ]
 };
 
+/* Google Maps API key for the base map. Paste yours between the quotes and
+   restrict it to https://szncu99.github.io/* in Google Cloud Console.
+   Leave it empty to use a free OpenStreetMap base map instead. */
+const GOOGLE_MAPS_API_KEY = "AIzaSyDbzsB2xaHjJsl-DtRtWanO5R-bkIJkNyA";
+const GOOGLE_MAP_ID = "DEMO_MAP_ID";
+
 /* Official RATP line colours */
 const LINE_COLORS = {
   "1": ["#FFCD00", "#1a1a1a"], "2": ["#003CA6", "#fff"], "3": ["#837902", "#fff"], "4": ["#CF009E", "#fff"],
@@ -382,41 +400,118 @@ function renderTimeline(day) {
   $("#tl").querySelectorAll(".stop").forEach(el => {
     const n = +el.dataset.n;
             el.addEventListener("keydown", e => { if (e.key === "Enter") el.click(); });
-        el.addEventListener("click", e => { if (e.target.closest("a")) return; hl = -1; highlight(n); centerOn(day.stops[n - 1], n); });
+        el.addEventListener("click", e => { if (e.target.closest("a")) return; highlight(n); centerOn(day.stops[n - 1]); });
   });
 }
 
-/* ---------- Google map (keyless embed) ---------- */
-let cur = 0, hl = 0;
-const gq = p => p === TRIP.hotel ? p.lat + "," + p.lon : (p.gq || p.name + ", Paris");
-function dayEmbed(d) {
-  const pts = [...d.stops, ...(d.back ? [TRIP.hotel] : [])];
-  return "https://maps.google.com/maps?saddr=" + encodeURIComponent(gq(TRIP.hotel)) +
-    "&daddr=" + pts.map(p => encodeURIComponent(gq(p))).join("+to:") + "&dirflg=w&output=embed";
+/* ---------- map: Google (or OpenStreetMap) base layer, our markers + routes on top ---------- */
+let cur = 0, hl = 0, map = null;
+const pins = new Map();             // stop number (0 = hotel) -> pin element
+let overlays = [];                  // things drawn for the current day
+
+function pinEl(label, isHotel) {
+  const d = document.createElement("div");
+  d.className = "pin" + (isHotel ? " h" : "");
+  d.textContent = label;
+  return d;
 }
-const placeEmbed = p => "https://maps.google.com/maps?q=" + encodeURIComponent(gq(p)) + "&z=16&output=embed";
-function showDayMap() {
-  $("#gframe").src = dayEmbed(TRIP.days[cur]);
-  $("#maptip").innerHTML = "Showing the whole day's route (walking view; use the itinerary for metro times). Tap a stop to zoom the map to it.";
+function daySequence(day) {
+  const H = TRIP.hotel, seq = [{ p: H, go: null }, ...day.stops.map(s => ({ p: s, go: s.go }))];
+  if (day.back) seq.push({ p: H, go: day.back });
+  return seq;
 }
-function centerOn(p, n) {
-  $("#gframe").src = placeEmbed(p);
-  $("#maptip").innerHTML = `Showing stop ${n}: ${esc(p.name)}. <button type="button" class="linkbtn" id="backroute">Show the whole day again</button>`;
-  $("#backroute").addEventListener("click", () => { showDayMap(); highlight(0); });
+function onPinClick(n) {
+  highlight(n);
+  document.querySelector(`.stop[data-n="${n}"]`)?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
 }
+
+const GoogleBase = {
+  init() {
+    return new Promise((resolve, reject) => {
+      window.__gmReady = resolve;
+      const s = document.createElement("script");
+      s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(GOOGLE_MAPS_API_KEY)}&v=weekly&libraries=marker&loading=async&callback=__gmReady`;
+      s.async = true; s.onerror = reject;
+      document.head.appendChild(s);
+    }).then(() => {
+      map = new google.maps.Map($("#map"), { center: { lat: 48.8566, lng: 2.3522 }, zoom: 13, mapId: GOOGLE_MAP_ID,
+        disableDefaultUI: true, zoomControl: true, gestureHandling: "cooperative", clickableIcons: false });
+    });
+  },
+  clear() { overlays.forEach(o => o.setMap ? o.setMap(null) : (o.map = null)); overlays = []; },
+  line(a, b, color, walk, faded) {
+    const opts = { path: [{ lat: a.lat, lng: a.lon }, { lat: b.lat, lng: b.lon }], map, strokeColor: walk ? "#5d6863" : color, strokeWeight: 5, strokeOpacity: faded ? .45 : .95 };
+    if (walk) Object.assign(opts, { strokeOpacity: 0, icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: faded ? .5 : .9, strokeWeight: 4, scale: 2 }, offset: "0", repeat: "12px" }] });
+    overlays.push(new google.maps.Polyline(opts));
+  },
+  marker(p, el, n) {
+    const m = new google.maps.marker.AdvancedMarkerElement({ map, position: { lat: p.lat, lng: p.lon }, content: el, title: n ? p.name : TRIP.hotel.name, zIndex: n });
+    if (n) el.addEventListener("click", () => onPinClick(n));
+    overlays.push(m);
+  },
+  fit(pts) {
+    const b = new google.maps.LatLngBounds(); pts.forEach(p => b.extend({ lat: p.lat, lng: p.lon }));
+    map.fitBounds(b, 48);
+  },
+  focus(p) { map.panTo({ lat: p.lat, lng: p.lon }); if (map.getZoom() < 15) map.setZoom(16); }
+};
+
+const OsmBase = {
+  init() {
+    map = L.map("map", { zoomControl: true, scrollWheelZoom: false }).setView([48.8566, 2.3522], 13);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19, subdomains: "abcd",
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(map);
+    return Promise.resolve();
+  },
+  clear() { overlays.forEach(o => o.remove()); overlays = []; },
+  line(a, b, color, walk, faded) {
+    overlays.push(L.polyline([[a.lat, a.lon], [b.lat, b.lon]], { color: walk ? "#5d6863" : color, weight: walk ? 4 : 5,
+      opacity: faded ? .45 : .95, dashArray: walk ? "1 9" : null, lineCap: "round" }).addTo(map));
+  },
+  marker(p, el, n) {
+    const m = L.marker([p.lat, p.lon], { icon: L.divIcon({ html: el, className: "", iconSize: [28, 28], iconAnchor: [14, 14] }),
+      title: n ? p.name : TRIP.hotel.name, zIndexOffset: n * 10, keyboard: true }).addTo(map);
+    if (n) m.on("click", () => onPinClick(n));
+    overlays.push(m);
+  },
+  fit(pts) { map.fitBounds(pts.map(p => [p.lat, p.lon]), { padding: [36, 36] }); },
+  focus(p) { map.setView([p.lat, p.lon], Math.max(map.getZoom(), 16)); }
+};
+
+let base = null;
+const mapReady = (GOOGLE_MAPS_API_KEY ? GoogleBase.init().then(() => GoogleBase) : Promise.reject())
+  .catch(() => OsmBase.init().then(() => OsmBase))
+  .then(b => { base = b; drawDay(); fitDay(); })
+  .catch(err => { $("#map").textContent = "The map could not load. Check your connection and reload the page."; console.error(err); });
+
+function drawDay() {
+  if (!base) return;
+  const day = TRIP.days[cur], seq = daySequence(day);
+  base.clear(); pins.clear();
+  for (let i = 1; i < seq.length; i++)
+    base.line(seq[i - 1].p, seq[i].p, legColor(seq[i].go), !legColor(seq[i].go), day.back && i === seq.length - 1);
+  const hp = pinEl("H", true); pins.set(0, hp); base.marker(TRIP.hotel, hp, 0);
+  day.stops.forEach((s, i) => { const el = pinEl(i + 1); pins.set(i + 1, el); base.marker(s, el, i + 1); });
+  pins.forEach((el, n) => el.classList.toggle("hl", n === hl && n > 0));
+}
+function centerOn(p) { base?.focus(p); }
 function highlight(n) {
-  if (n === hl) return;
   hl = n;
   document.querySelectorAll(".stop").forEach(e => e.classList.toggle("hl", +e.dataset.n === n));
+  pins.forEach((el, k) => el.classList.toggle("hl", k === n && n > 0));
 }
-function fitDay() { showDayMap(); }
+function fitDay() { const d = TRIP.days[cur]; base?.fit([TRIP.hotel, ...d.stops]); }
+$("#zfit").addEventListener("click", () => { highlight(0); fitDay(); });
 
 /* ---------- select a day ---------- */
 function select(i, animate = true) {
   cur = i; hl = 0;
   tabs.querySelectorAll("button").forEach((b, j) => b.setAttribute("aria-selected", j === i));
   renderTimeline(TRIP.days[i]);
-  fitDay(animate);
+  drawDay();
+  fitDay();
   const d = TRIP.days[i];
   $("#gmaps").href = routeUrl([TRIP.hotel, ...d.stops, ...(d.back ? [TRIP.hotel] : [])]);
   try { localStorage.setItem("paris-day", i); } catch (e) {}
