@@ -156,7 +156,7 @@ svg text { font-family: var(--font-body); }
     </div>
     <div class="hotel"><span class="hpin">H</span><span id="hotel"></span></div>
   </header>
-  <p class="sample" id="sample" hidden>This is a sample itinerary. Send Claude your hotel, dates and the places you want to see, and it will be replaced with your real plan.</p>
+  <p class="sample" id="sample" hidden>This day is still a sample. Tell Claude your plans for it and it will be replaced.</p>
 
   <nav class="days" id="days" role="tablist" aria-label="Trip days"></nav>
 
@@ -192,35 +192,33 @@ svg text { font-family: var(--font-body); }
    ============================================================ */
 const TRIP = {
   title: "Paris",
-  dates: "Sample 4-day itinerary",
+  dates: "Day 1 is planned · Days 2–4 are still samples",
   isSample: true,
-  hotel: { name: "Hotel in Le Marais", area: "near Saint-Paul metro (line 1)", lat: 48.8551, lon: 2.3612 },
+  hotel: { name: "Hôtel Armoni", area: "7 Villa Berthier, 17e · near Porte de Champerret (Metro 3)", gq: "Hôtel Armoni, 7 Villa Berthier, 75017 Paris", lat: 48.8869, lon: 2.2957 },
   days: [
     {
-      title: "Islands & the Left Bank",
-      start: "09:00",
+      title: "Arrival & the Palais",
+      from: { name: "Gare du Nord", label: "Arrive at Gare du Nord", note: "Eurostar arrives 15:02", pin: "GN", lat: 48.8809, lon: 2.3553 },
+      start: "15:02",
       stops: [
-        { name: "Notre-Dame de Paris", lat: 48.8530, lon: 2.3499, stay: 75,
-          go: { mode: "walk", min: 12, how: "Walk across Pont Louis-Philippe" },
-          note: "Reopened Dec 2024. Entry is free; book a time slot online to skip the line." },
-        { name: "Sainte-Chapelle", lat: 48.8554, lon: 2.3450, stay: 60,
-          go: { mode: "walk", min: 6, how: "Walk along Rue de la Cité" },
-          note: "Go on a sunny morning for the stained glass. Timed tickets." },
-        { name: "Musée d'Orsay", lat: 48.8600, lon: 2.3266, stay: 150,
-          go: { mode: "rer", line: "C", min: 14, from: "Saint-Michel Notre-Dame", to: "Musée d'Orsay" },
-          note: "Impressionists on level 5. Lunch at Café Campana inside." },
-        { name: "Saint-Germain-des-Prés", lat: 48.8540, lon: 2.3334, stay: 60,
-          go: { mode: "walk", min: 11, how: "Walk down Rue du Bac" },
-          note: "Coffee at Les Deux Magots or Café de Flore." },
-        { name: "Jardin du Luxembourg", lat: 48.8462, lon: 2.3372, stay: 60,
-          go: { mode: "walk", min: 12, how: "Walk via Place Saint-Sulpice" } },
-        { name: "Panthéon", lat: 48.8462, lon: 2.3464, stay: 45,
-          go: { mode: "walk", min: 8, how: "Walk up Rue Soufflot" } }
+        { hotel: true, name: "Hôtel Armoni: check in & rest", stay: 45,
+          go: { mode: "metro", line: "2", min: 40, from: "La Chapelle", to: "Villiers", how: "then Metro 3 to Porte de Champerret, walk 5 min" },
+          note: "Time includes about 10 min to get off the Eurostar and walk to La Chapelle (linked to Gare du Nord). With luggage, a taxi takes about 25 min." },
+        { name: "Petit Palais", lat: 48.8660, lon: 2.3146, stay: 60,
+          go: { mode: "metro", line: "3", min: 30, from: "Porte de Champerret", to: "Saint-Lazare", how: "then Metro 13 to Champs-Élysées–Clemenceau" },
+          note: "Free permanent collection and a lovely garden café. Open Tue–Sun 10:00–18:00, closed Mondays, so it comes before the Grand Palais." },
+        { name: "Grand Palais", lat: 48.8661, lon: 2.3124, stay: 30,
+          go: { mode: "walk", min: 3, how: "Cross Avenue Winston-Churchill" },
+          note: "Reopened in 2025 after its renovation. Check what's on in the glass nave and book exhibitions online." },
+        { name: "La Pie Noir (dinner)", gq: "La Pie Noir, 5 Rue de la Montagne Sainte-Geneviève, Paris", lat: 48.8498, lon: 2.3487, at: "19:00", stay: 90,
+          go: { mode: "metro", line: "13", min: 30, from: "Champs-Élysées–Clemenceau", to: "Invalides", how: "then RER C to Saint-Michel Notre-Dame, walk 8 min" },
+          note: "5 Rue de la Montagne Sainte-Geneviève, 5e. Dinner from 18:30; closed Sundays and Mondays. Book ahead." }
       ],
-      back: { mode: "walk", min: 24, how: "Walk via Pont de Sully" }
+      back: { mode: "rer", line: "C", min: 45, from: "Saint-Michel Notre-Dame", to: "Pereire–Levallois", how: "train toward Pontoise; walk 8 min to the station and 10 min to the hotel" }
     },
     {
       title: "From the Louvre to the Eiffel Tower",
+      sample: true,
       start: "08:45",
       stops: [
         { name: "Musée du Louvre", lat: 48.8606, lon: 2.3376, stay: 180,
@@ -245,6 +243,7 @@ const TRIP = {
     },
     {
       title: "Opéra & Montmartre",
+      sample: true,
       start: "09:30",
       stops: [
         { name: "Palais Garnier", lat: 48.8720, lon: 2.3316, stay: 75,
@@ -267,6 +266,7 @@ const TRIP = {
     },
     {
       title: "Le Marais & Canal Saint-Martin",
+      sample: true,
       start: "10:00",
       stops: [
         { name: "Place des Vosges", lat: 48.8556, lon: 2.3655, stay: 30,
@@ -304,6 +304,10 @@ const LINE_COLORS = {
   "A": ["#E2231A", "#fff"], "B": ["#7BA3DC", "#1a1a1a"], "C": ["#F3D311", "#1a1a1a"], "D": ["#00814F", "#fff"], "E": ["#C04191", "#fff"]
 };
 
+/* A stop with `hotel: true` is the hotel itself (e.g. dropping bags mid-day). */
+TRIP.days.forEach(d => { d.stops = d.stops.map(st => st.hotel ? { ...st, lat: TRIP.hotel.lat, lon: TRIP.hotel.lon } : st); });
+const stopLabel = (day, i) => day.stops[i].hotel ? "H" : String(day.stops.slice(0, i + 1).filter(x => !x.hotel).length);
+
 /* ---------- helpers ---------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -312,7 +316,7 @@ const fmt = m => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 
 const dur = m => m < 60 ? m + " min" : Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) : "");
 const MODE_WORD = { metro: "Metro", rer: "RER", bus: "Bus", walk: "Walk" };
 const dirUrl = (a, b, mode) => `https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=${mode === "walk" ? "walking" : "transit"}`;
-const routeUrl = pts => "https://www.google.com/maps/dir/" + pts.map(p => p === TRIP.hotel ? p.lat + "," + p.lon : encodeURIComponent(p.gq || p.name + ", Paris")).join("/");
+const routeUrl = pts => "https://www.google.com/maps/dir/" + pts.map(p => encodeURIComponent(p.gq || p.name + ", Paris")).join("/");
 const placeUrl = p => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " Paris")}`;
 
 function legColor(go) {
@@ -331,13 +335,18 @@ function badge(go) {
 function schedule(day) {
   const H = TRIP.hotel;
   let t = toMin(day.start);
-  const rows = [{ type: "hotel", label: "Depart hotel", t, place: H }];
-  let prev = H;
+  const F = day.from;
+  const rows = [F ? { type: "start", label: F.label || F.name, note: F.note, t, place: F } : { type: "hotel", label: "Depart hotel", t, place: H }];
+  let prev = F || H;
   day.stops.forEach((s, i) => {
+    if (s.at) {                       // fixed arrival time: stay longer at the previous stop
+      const dep = toMin(s.at) - s.go.min, last = rows[rows.length - 1];
+      if (dep > t) { if (last.type === "stop") last.until = dep; t = dep; }
+    }
     rows.push({ type: "leg", go: s.go, from: prev, to: s, t });
     t += s.go.min;
-    rows.push({ type: "stop", n: i + 1, stop: s, t, until: t + s.stay });
-    t += s.stay;
+    rows.push({ type: "stop", n: i + 1, label: stopLabel(day, i), stop: s, t, until: t + s.stay });
+    t = rows[rows.length - 1].until = t + s.stay;
     prev = s;
   });
   if (day.back) {
@@ -352,7 +361,7 @@ function schedule(day) {
 $("#title").innerHTML = esc(TRIP.title) + " <em>itinerary</em>";
 $("#dates").textContent = TRIP.dates;
 $("#hotel").innerHTML = `<b>${esc(TRIP.hotel.name)}</b><br>${esc(TRIP.hotel.area || "")}`;
-$("#sample").hidden = !TRIP.isSample;
+
 
 const tabs = $("#days");
 TRIP.days.forEach((d, i) => {
@@ -371,13 +380,16 @@ tabs.addEventListener("keydown", e => {
 /* ---------- timeline ---------- */
 function renderTimeline(day) {
   const rows = schedule(day);
-  const stops = day.stops.length, travel = rows.filter(r => r.type === "leg").reduce((a, r) => a + r.go.min, 0);
+  const stops = day.stops.filter(x => !x.hotel).length, travel = rows.filter(r => r.type === "leg").reduce((a, r) => a + r.go.min, 0);
   $("#dayTitle").textContent = day.title;
   $("#daySum").textContent = `${fmt(rows[0].t)} – ${fmt(rows[rows.length - 1].t)} · ${stops} stops · ${dur(travel)} getting around`;
   $("#tl").innerHTML = rows.map(r => {
     if (r.type === "hotel") return `
       <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">H</span></div>
       <div class="body"><h3>${esc(r.label)}</h3><div class="meta">${esc(TRIP.hotel.name)}</div></div></li>`;
+    if (r.type === "start") return `
+      <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">${esc(r.place.pin || "▸")}</span></div>
+      <div class="body"><h3>${esc(r.label)}</h3>${r.note ? `<div class="meta">${esc(r.note)}</div>` : ""}</div></li>`;
     if (r.type === "leg") {
       const g = r.go;
       const route = g.from ? `${esc(g.from)} → ${esc(g.to)}` : esc(g.how || "Walk");
@@ -388,12 +400,12 @@ function renderTimeline(day) {
       <span>${route}${extra}</span><span class="mins">${g.min} min</span>
       <a href="${dirUrl(r.from, r.to, g.mode)}" target="_blank" rel="noopener">Directions</a></div></div></li>`;
     }
-    const s = r.stop;
+    const s = r.stop, fixed = s.at ? " · booked for " + s.at : "";
     return `
-      <li class="ev"><div class="time">${fmt(r.t)}<small>arrive</small></div><div class="rail"><span class="dot">${r.n}</span></div>
+      <li class="ev"><div class="time">${fmt(r.t)}<small>arrive</small></div><div class="rail"><span class="dot${s.hotel ? " h" : ""}">${r.label}</span></div>
       <div class="body"><div class="stop" data-n="${r.n}" tabindex="0">
         <h3>${esc(s.name)}</h3>
-        <div class="meta">${dur(s.stay)} here · leave at ${fmt(r.until)} · <a href="${placeUrl(s)}" target="_blank" rel="noopener" style="color:inherit">map</a></div>
+        <div class="meta">${dur(r.until - r.t)} here${fixed} · leave at ${fmt(r.until)} · <a href="${s.hotel ? `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}` : placeUrl(s)}" target="_blank" rel="noopener" style="color:inherit">map</a></div>
         ${s.note ? `<p class="note">${esc(s.note)}</p>` : ""}
       </div></div></li>`;
   }).join("");
@@ -416,7 +428,7 @@ function pinEl(label, isHotel) {
   return d;
 }
 function daySequence(day) {
-  const H = TRIP.hotel, seq = [{ p: H, go: null }, ...day.stops.map(s => ({ p: s, go: s.go }))];
+  const H = TRIP.hotel, seq = [{ p: day.from || H, go: null }, ...day.stops.map(s => ({ p: s, go: s.go }))];
   if (day.back) seq.push({ p: H, go: day.back });
   return seq;
 }
@@ -493,7 +505,8 @@ function drawDay() {
   for (let i = 1; i < seq.length; i++)
     base.line(seq[i - 1].p, seq[i].p, legColor(seq[i].go), !legColor(seq[i].go), day.back && i === seq.length - 1);
   const hp = pinEl("H", true); pins.set(0, hp); base.marker(TRIP.hotel, hp, 0);
-  day.stops.forEach((s, i) => { const el = pinEl(i + 1); pins.set(i + 1, el); base.marker(s, el, i + 1); });
+  if (day.from) base.marker(day.from, pinEl(day.from.pin || "▸", true), 0);
+  day.stops.forEach((s, i) => { if (s.hotel) return; const el = pinEl(stopLabel(day, i)); pins.set(i + 1, el); base.marker(s, el, i + 1); });
   pins.forEach((el, n) => el.classList.toggle("hl", n === hl && n > 0));
 }
 function centerOn(p) { base?.focus(p); }
@@ -502,7 +515,7 @@ function highlight(n) {
   document.querySelectorAll(".stop").forEach(e => e.classList.toggle("hl", +e.dataset.n === n));
   pins.forEach((el, k) => el.classList.toggle("hl", k === n && n > 0));
 }
-function fitDay() { const d = TRIP.days[cur]; base?.fit([TRIP.hotel, ...d.stops]); }
+function fitDay() { const d = TRIP.days[cur]; base?.fit([TRIP.hotel, ...(d.from ? [d.from] : []), ...d.stops]); }
 $("#zfit").addEventListener("click", () => { highlight(0); fitDay(); });
 
 /* ---------- select a day ---------- */
@@ -513,7 +526,8 @@ function select(i, animate = true) {
   drawDay();
   fitDay();
   const d = TRIP.days[i];
-  $("#gmaps").href = routeUrl([TRIP.hotel, ...d.stops, ...(d.back ? [TRIP.hotel] : [])]);
+  $("#gmaps").href = routeUrl([d.from || TRIP.hotel, ...d.stops.map(x => x.hotel ? TRIP.hotel : x), ...(d.back ? [TRIP.hotel] : [])]);
+  $("#sample").hidden = !d.sample;
   try { localStorage.setItem("paris-day", i); } catch (e) {}
   try { history.replaceState(null, "", "#day" + (i + 1)); } catch (e) {}
 }
