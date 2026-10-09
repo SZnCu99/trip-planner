@@ -106,6 +106,7 @@ ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 .legcard a { color: var(--accent); font-size: 13px; text-decoration: none; border-bottom: 1px solid currentColor; }
 .badge { flex: none; white-space: nowrap; display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1; }
 .badge.walk { background: var(--bg); border: 1px dashed var(--muted); color: var(--muted); }
+.badge.taxi { border-radius: 4px; background: #3a3f3c; color: #fff; font-size: 11px; }
 .badge.bus { border-radius: 4px; background: #2f6fb3; color: #fff; }
 .badge.rer { border-radius: 5px; }
 .mins { font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -233,49 +234,51 @@ const TRIP = {
       open: "The rest of the day is still open."
     },
     {
-      title: "Opéra & Montmartre",
-      sample: true,
-      start: "09:30",
-      stops: [
-        { name: "Palais Garnier", lat: 48.8720, lon: 2.3316, stay: 75,
-          go: { mode: "metro", line: "8", min: 20, from: "Bastille", to: "Opéra", how: "Walk 5 min to Bastille first" },
-          note: "Self-guided visit; the Chagall ceiling is in the auditorium." },
-        { name: "Galeries Lafayette rooftop", lat: 48.8738, lon: 2.3320, stay: 60,
-          go: { mode: "walk", min: 4, how: "Walk up Boulevard Haussmann" },
-          note: "Free rooftop terrace, open during store hours." },
-        { name: "Abbesses (lunch)", gq: "Place des Abbesses, Paris", lat: 48.8845, lon: 2.3385, stay: 60,
-          go: { mode: "metro", line: "12", min: 18, from: "Trinité–d'Estienne d'Orves", to: "Abbesses" },
-          note: "Abbesses is a deep station: take the lift, not the 200 stairs." },
-        { name: "Sacré-Cœur", lat: 48.8867, lon: 2.3431, stay: 60,
-          go: { mode: "walk", min: 8, how: "Walk up, or take the funicular with a metro ticket" } },
-        { name: "Place du Tertre", lat: 48.8865, lon: 2.3408, stay: 40,
-          go: { mode: "walk", min: 3, how: "Walk along Rue Norvins" } },
-        { name: "Dinner in South Pigalle", gq: "Rue des Martyrs, Paris", lat: 48.8800, lon: 2.3375, stay: 90,
-          go: { mode: "walk", min: 14, how: "Walk down past the Moulin Rouge" } }
-      ],
-      back: { mode: "metro", line: "12", min: 30, from: "Pigalle", to: "Concorde", how: "then line 1 to Saint-Paul" }
-    },
-    {
-      title: "Le Marais & Canal Saint-Martin",
-      sample: true,
+      title: "Notre-Dame & Le Marais",
+      flexible: true,
       start: "10:00",
       stops: [
-        { name: "Place des Vosges", lat: 48.8556, lon: 2.3655, stay: 30,
-          go: { mode: "walk", min: 6, how: "Walk along Rue Saint-Antoine" },
-          note: "Victor Hugo's house is in the corner, free to visit." },
-        { name: "Musée Picasso", lat: 48.8598, lon: 2.3622, stay: 90,
-          go: { mode: "walk", min: 7, how: "Walk up Rue de Turenne" } },
-        { name: "Marché des Enfants Rouges", lat: 48.8628, lon: 2.3618, stay: 60,
-          go: { mode: "walk", min: 5, how: "Walk to Rue de Bretagne" },
-          note: "Oldest covered market in Paris. Get there before 12:30 for a seat." },
-        { name: "Centre Pompidou", lat: 48.8607, lon: 2.3522, stay: 120,
-          go: { mode: "walk", min: 12, how: "Walk via Rue Rambuteau" },
-          note: "Check opening status: the building is closing for renovation in stages." },
-        { name: "Canal Saint-Martin", lat: 48.8710, lon: 2.3650, stay: 75,
-          go: { mode: "metro", line: "11", min: 15, from: "Rambuteau", to: "République", how: "then walk 8 min" },
-          note: "Walk the iron footbridges; picnic on the quai at sunset." }
+        { name: "Notre-Dame de Paris", lat: 48.8530, lon: 2.3499, stay: 75,
+          go: { mode: "rer", line: "C", min: 35, from: "Pereire–Levallois", to: "Saint-Michel Notre-Dame", how: "walk 10 min to the station first" },
+          note: "Open every day and free to enter; reserve a time slot online to skip the line." },
+        { name: "Carré Pain de Mie", gq: "Carré Pain de Mie, 5 Rue Rambuteau, 75004 Paris", lat: 48.8605, lon: 2.3566, stay: 45,
+          go: { mode: "walk", min: 15, how: "Walk across Pont d'Arcole and up Rue du Temple" },
+          note: "5 Rue Rambuteau, 4e. A Japanese-style bakery (shokupan sandwiches, desserts) open daily 10:00–20:00, so it works better for lunch than dinner." },
+        { name: "Le Marais", gq: "Rue des Rosiers, Paris", lat: 48.8571, lon: 2.3590, stay: 150,
+          go: { mode: "walk", min: 6, how: "Walk to Rue des Rosiers" },
+          note: "Wander Rue des Rosiers, Rue Vieille-du-Temple and Place des Vosges. It's a Monday: Musée Picasso and Musée Carnavalet are closed, but shops and Place des Vosges are open." }
       ],
-      back: { mode: "metro", line: "5", min: 22, from: "Jacques Bonsergent", to: "Bastille", how: "then walk 6 min" }
+      back: { mode: "rer", line: "C", min: 45, from: "Saint-Michel Notre-Dame", to: "Pereire–Levallois", how: "train toward Pontoise; walk 12 min to the station and 10 min to the hotel" }
+    },
+    {
+      title: "Shopping & Le Taillevent",
+      flexible: true,
+      start: "11:00",
+      stops: [
+        { name: "Galeries Lafayette Haussmann", lat: 48.8738, lon: 2.3320, stay: 240,
+          go: { mode: "metro", line: "3", min: 20, from: "Porte de Champerret", to: "Havre-Caumartin", how: "then walk 5 min" },
+          note: "Open daily. Don't miss the free rooftop terrace and the glass dome." },
+        { hotel: true, name: "Hôtel Armoni: dress up", stay: 90,
+          go: { mode: "metro", line: "3", min: 25, from: "Havre-Caumartin", to: "Porte de Champerret", how: "then walk 5 min" } },
+        { name: "Le Taillevent", gq: "Le Taillevent, 15 Rue Lamennais, 75008 Paris", lat: 48.8743, lon: 2.3021, at: "19:15", stay: 165,
+          go: { mode: "taxi", min: 15, how: "To 15 Rue Lamennais, 8e" },
+          note: "Dinner service starts at 19:15. Smart dress expected." }
+      ],
+      back: { mode: "taxi", min: 15, how: "Back to the hotel" }
+    },
+    {
+      title: "Lunch at Eels & home",
+      flexible: true,
+      start: "12:00",
+      morning: "The morning is free.",
+      stops: [
+        { name: "Eels", gq: "Eels, 27 Rue d'Hauteville, 75010 Paris", lat: 48.8716, lon: 2.3500, at: "13:00", stay: 105,
+          go: { mode: "metro", line: "3", min: 35, from: "Porte de Champerret", to: "Sentier", how: "then walk 10 min. With luggage, a taxi takes about 25 min." },
+          note: "27 Rue d'Hauteville, 10e. Lunch is served Tue–Sat 12:30–14:00." },
+        { name: "Gare du Nord: Eurostar 16:47", gq: "Gare du Nord, Paris", lat: 48.8809, lon: 2.3553, at: "15:15", hideAt: true, stay: 92,
+          go: { mode: "walk", min: 15, how: "Walk up Rue d'Hauteville and Rue La Fayette" },
+          note: "Eurostar check-in closes 30 min before departure. If you leave bags at the hotel after checking out, add about 45 min to collect them." }
+      ]
     }
   ]
 };
@@ -305,18 +308,20 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
 const fmt = m => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
 const dur = m => m < 60 ? m + " min" : Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) : "");
-const MODE_WORD = { metro: "Metro", rer: "RER", bus: "Bus", walk: "Walk" };
-const dirUrl = (a, b, mode) => `https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=${mode === "walk" ? "walking" : "transit"}`;
+const MODE_WORD = { metro: "Metro", rer: "RER", bus: "Bus", walk: "Walk", taxi: "Taxi" };
+const dirUrl = (a, b, mode) => `https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=${mode === "walk" ? "walking" : mode === "taxi" ? "driving" : "transit"}`;
 const routeUrl = pts => "https://www.google.com/maps/dir/" + pts.map(p => encodeURIComponent(p.gq || p.name + ", Paris")).join("/");
 const placeUrl = p => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " Paris")}`;
 
 function legColor(go) {
   if (go.mode === "walk") return null;
   if (go.mode === "bus") return "#2f6fb3";
+  if (go.mode === "taxi") return "#3a3f3c";
   return (LINE_COLORS[go.line] || ["#555", "#fff"])[0];
 }
 function badge(go) {
   if (go.mode === "walk") return `<span class="badge walk" title="Walk">⋯</span>`;
+  if (go.mode === "taxi") return `<span class="badge taxi" title="Taxi">Taxi</span>`;
   if (go.mode === "bus") return `<span class="badge bus" title="Bus ${esc(go.line)}">${esc(go.line || "Bus")}</span>`;
   const [bg, fg] = LINE_COLORS[go.line] || ["#555", "#fff"];
   return `<span class="badge ${go.mode}" style="background:${bg};color:${fg}" title="${MODE_WORD[go.mode]} ${esc(go.line)}">${go.mode === "rer" ? "RER " : ""}${esc(go.line)}</span>`;
@@ -327,16 +332,21 @@ function schedule(day) {
   const H = TRIP.hotel;
   let t = toMin(day.start);
   const F = day.from;
-  const rows = [F ? { type: "start", label: F.label || F.name, note: F.note, t, place: F } : { type: "hotel", label: "Depart hotel", t, place: H }];
+  let timed = !day.flexible;        // flexible days only show clock times from a fixed (`at`) stop onward
+  const rows = [];
+  if (day.morning) rows.push({ type: "open", label: day.morning, sub: "", t });
+  rows.push(F ? { type: "start", label: F.label || F.name, note: F.note, t, place: F, timed: true } : { type: "hotel", label: "Depart hotel", t, place: H, timed });
   let prev = F || H;
   day.stops.forEach((s, i) => {
     if (s.at) {                       // fixed arrival time: stay longer at the previous stop
       const dep = toMin(s.at) - s.go.min, last = rows[rows.length - 1];
-      if (dep > t) { if (last.type === "stop") last.until = dep; t = dep; }
+      if (last.type === "stop") last.until = dep; else last.t = dep;
+      last.leaveBy = dep;
+      t = dep; timed = true;
     }
     rows.push({ type: "leg", go: s.go, from: prev, to: s, t });
     t += s.go.min;
-    rows.push({ type: "stop", n: i + 1, label: stopLabel(day, i), stop: s, t, until: t + s.stay });
+    rows.push({ type: "stop", n: i + 1, label: stopLabel(day, i), stop: s, t, until: t + s.stay, timed });
     t = rows[rows.length - 1].until = t + s.stay;
     prev = s;
   });
@@ -344,7 +354,7 @@ function schedule(day) {
   if (day.back) {
     rows.push({ type: "leg", go: day.back, from: prev, to: H, t });
     t += day.back.min;
-    rows.push({ type: "hotel", label: "Back at hotel", t, place: H });
+    rows.push({ type: "hotel", label: "Back at hotel", t, place: H, timed });
   }
   return rows;
 }
@@ -377,16 +387,21 @@ function renderTimeline(day) {
   const stops = day.stops.filter(x => !x.hotel).length, travel = rows.filter(r => r.type === "leg").reduce((a, r) => a + r.go.min, 0);
   $("#dayTitle").textContent = day.title;
   const di = TRIP.days.indexOf(day);
-  $("#daySum").textContent = `${fmtDate(dayDate(di), { weekday: "long", day: "numeric", month: "long" })} · ${fmt(rows[0].t)} – ${fmt(rows[rows.length - 1].t)} · ${stops} stops · ${dur(travel)} getting around`;
+  const when = fmtDate(dayDate(di), { weekday: "long", day: "numeric", month: "long" });
+  const fixedStops = day.stops.filter(x => x.at && !x.hideAt).map(x => `${x.name.split(":")[0]} ${x.at}`);
+  $("#daySum").textContent = day.flexible
+    ? `${when} · flexible day${fixedStops.length ? " · " + fixedStops.join(", ") : ""} · ${dur(travel)} getting around`
+    : `${when} · ${fmt(rows[0].t)} – ${fmt(rows[rows.length - 1].t)} · ${stops} stops · ${dur(travel)} getting around`;
+  const clock = r => r.timed ? fmt(r.t) : r.leaveBy != null ? `<small>leave by</small>${fmt(r.leaveBy)}` : "";
   $("#tl").innerHTML = rows.map(r => {
     if (r.type === "hotel") return `
-      <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">H</span></div>
+      <li class="ev"><div class="time">${clock(r)}</div><div class="rail"><span class="dot h">H</span></div>
       <div class="body"><h3>${esc(r.label)}</h3><div class="meta">${esc(TRIP.hotel.name)}</div></div></li>`;
     if (r.type === "open") return `
       <li class="ev"><div class="time"></div><div class="rail"><span class="dot open">…</span></div>
-      <div class="body"><h3 class="muted">${esc(r.label)}</h3><div class="meta">Tell Claude what you'd like to add.</div></div></li>`;
+      <div class="body"><h3 class="muted">${esc(r.label)}</h3>${r.sub === "" ? "" : `<div class="meta">Tell Claude what you'd like to add.</div>`}</div></li>`;
     if (r.type === "start") return `
-      <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">${esc(r.place.pin || "▸")}</span></div>
+      <li class="ev"><div class="time">${clock(r)}</div><div class="rail"><span class="dot h">${esc(r.place.pin || "▸")}</span></div>
       <div class="body"><h3>${esc(r.label)}</h3>${r.note ? `<div class="meta">${esc(r.note)}</div>` : ""}</div></li>`;
     if (r.type === "leg") {
       const g = r.go;
@@ -398,12 +413,14 @@ function renderTimeline(day) {
       <span>${route}${extra}</span><span class="mins">${g.min} min</span>
       <a href="${dirUrl(r.from, r.to, g.mode)}" target="_blank" rel="noopener">Directions</a></div></div></li>`;
     }
-    const s = r.stop, fixed = s.at ? " · booked for " + s.at : "";
+    const s = r.stop, fixed = s.at && !s.hideAt ? " · booked for " + s.at : "";
+    const timing = r.timed ? `${dur(r.until - r.t)} here${fixed} · leave at ${fmt(r.until)}`
+      : `about ${dur(s.stay)}${r.leaveBy != null ? ` · leave by ${fmt(r.leaveBy)}` : ""}`;
     return `
-      <li class="ev"><div class="time">${fmt(r.t)}<small>arrive</small></div><div class="rail"><span class="dot${s.hotel ? " h" : ""}${s.tbd ? " tbd" : ""}">${r.label}</span></div>
+      <li class="ev"><div class="time">${r.timed ? `${fmt(r.t)}<small>arrive</small>` : clock(r)}</div><div class="rail"><span class="dot${s.hotel ? " h" : ""}${s.tbd ? " tbd" : ""}">${r.label}</span></div>
       <div class="body"><div class="stop" data-n="${r.n}" tabindex="0">
         <h3>${esc(s.name)}</h3>
-        <div class="meta">${dur(r.until - r.t)} here${fixed} · leave at ${fmt(r.until)} · <a href="${s.hotel ? `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}` : placeUrl(s)}" target="_blank" rel="noopener" style="color:inherit">map</a></div>
+        <div class="meta">${timing} · <a href="${s.hotel ? `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}` : placeUrl(s)}" target="_blank" rel="noopener" style="color:inherit">map</a></div>
         ${s.note ? `<p class="note">${esc(s.note)}</p>` : ""}
       </div></div></li>`;
   }).join("");
