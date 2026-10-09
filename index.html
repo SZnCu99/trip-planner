@@ -34,20 +34,8 @@ img { max-width: 100%; }
   --font-display: "Fredoka", "Baloo 2", "Arial Rounded MT Bold", system-ui, sans-serif;
   --font-body: "Nunito", "Avenir Next", system-ui, sans-serif;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #262326; --surface: #302c30; --ink: #f4eef1; --muted: #bdb3b9; --line: #433d42;
-    --accent: #e894aa; --accent-strong: #f5a9bc; --accent-ink: #2b2629; --banner: #352f33;
-    --butter: #d9bf6e; --lilac: #a79bd3; --mint: #8cc2ab; --peach: #d9a491; --sky: #8fb6d4; --kitty: #8f888d;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #262326; --surface: #302c30; --ink: #f4eef1; --muted: #bdb3b9; --line: #433d42;
-  --accent: #e894aa; --accent-strong: #f5a9bc; --accent-ink: #2b2629; --banner: #352f33;
-  --butter: #d9bf6e; --lilac: #a79bd3; --mint: #8cc2ab; --peach: #d9a491; --sky: #8fb6d4; --kitty: #8f888d;
-  color-scheme: dark;
-}
+/* Always the light pastel look, even when the device is in dark mode. */
+:root, :root[data-theme="dark"] { color-scheme: light; }
 
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
 .wrap { max-width: 900px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; display: grid; gap: 22px; }
