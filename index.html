@@ -51,7 +51,7 @@ header { position: relative; overflow: hidden; display: flex; flex-wrap: wrap; a
     radial-gradient(circle at 98% 55%, var(--butter) 0 4px, transparent 5px),
     radial-gradient(circle at 1% 70%, var(--peach) 0 3px, transparent 4px); }
 .hello { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.cake { flex: none; width: 76px; height: 70px; animation: bob 3s ease-in-out infinite; }
+.cake { flex: none; width: 104px; height: auto; animation: bob 3s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(-5px) rotate(-3deg); } }
 .hotel { background: var(--surface); border-radius: 16px; padding: 10px 14px; }
 .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-strong); margin: 0 0 4px; }
@@ -91,7 +91,7 @@ main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; max-widt
 
 ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 .ev { display: grid; grid-template-columns: 56px 36px minmax(0, 1fr); column-gap: 10px; }
-@media (max-width: 480px) { .ev { grid-template-columns: 46px 30px minmax(0, 1fr); column-gap: 8px; } .time { font-size: 14px; } .body h3 { font-size: 17px; } .dot { width: 26px; height: 26px; } }
+@media (max-width: 480px) { .cake { width: 84px; } .ev { grid-template-columns: 46px 30px minmax(0, 1fr); column-gap: 8px; } .time { font-size: 14px; } .body h3 { font-size: 17px; } .dot { width: 26px; height: 26px; } }
 .time { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 15px; padding-top: 6px; text-align: right; }
 .time small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
 .rail { position: relative; display: flex; justify-content: center; }
@@ -168,17 +168,7 @@ svg text { font-family: var(--font-body); }
 <div class="wrap">
   <header>
     <div class="hello">
-      <svg class="cake" viewBox="0 0 76 70" aria-hidden="true">
-        <path d="M38 2 L47 22 H29 Z" fill="#cfe5f6" stroke="#5a5358" stroke-width="2" stroke-linejoin="round"/>
-        <circle cx="38" cy="3" r="3.5" fill="#f5a9bc" stroke="#5a5358" stroke-width="1.5"/>
-        <circle cx="35" cy="14" r="1.6" fill="#fde8a6"/><circle cx="41" cy="18" r="1.6" fill="#f5a9bc"/>
-        <path d="M14 30 L18 14 L30 24 M62 30 L58 14 L46 24" fill="#b7b1b5" stroke="#5a5358" stroke-width="2.4" stroke-linejoin="round"/>
-        <ellipse cx="38" cy="46" rx="30" ry="21" fill="#b7b1b5" stroke="#5a5358" stroke-width="2.4"/>
-        <circle cx="27" cy="44" r="2.6" fill="#4f474c"/><circle cx="49" cy="44" r="2.6" fill="#4f474c"/>
-        <path d="M34 50 q2 2.5 4 0 q2 2.5 4 0" fill="none" stroke="#4f474c" stroke-width="1.8" stroke-linecap="round"/>
-        <ellipse cx="20" cy="51" rx="4" ry="2.4" fill="#f5a9bc" opacity=".8"/><ellipse cx="56" cy="51" rx="4" ry="2.4" fill="#f5a9bc" opacity=".8"/>
-        <path d="M6 46 h9 M6 51 h9 M61 46 h9 M61 51 h9" stroke="#5a5358" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
+      <img class="cake" src="pusheen-birthday.png" alt="Pusheen with a birthday cake" width="339" height="360">
       <div>
         <p class="eyebrow" id="dates"></p>
         <h1 id="title"></h1>
