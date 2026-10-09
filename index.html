@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Paris Trip Planner</title>
+<title>Xinang's Paris Birthday</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Jost:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
@@ -14,67 +14,88 @@
 body { margin: 0; -webkit-font-smoothing: antialiased; }
 [hidden] { display: none !important; }
 img { max-width: 100%; }
-/* Layout: day tabs on top, then itinerary timeline (left) beside a sticky hand-drawn map of Paris (right); stacks on phones. */
+/* Layout: a confetti birthday banner, wrapping day "candy" buttons, the itinerary, then the map below. */
 :root {
-  --bg: #f3f4f1;          /* limestone, faintly green */
+  --bg: #fff5f7;          /* blush */
   --surface: #ffffff;
-  --ink: #18201d;
-  --muted: #5d6863;
-  --line: #d9ddd7;
-  --accent: #1f5b4a;      /* Paris bench / kiosk green */
+  --ink: #3b2a3a;         /* plum */
+  --muted: #8a6f86;
+  --line: #f4d9e2;
+  --accent: #e2557a;      /* raspberry frosting */
   --accent-ink: #ffffff;
-  --map-land: #e9ebe4;
-  --map-arr: #c9cfc6;
-  --map-label: #9aa39c;
-  --water: #9cc3d3;
-  --font-display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
-  --font-body: "Jost", "Futura", "Century Gothic", system-ui, sans-serif;
+  --butter: #ffd36e;
+  --lilac: #c9b8f5;
+  --mint: #9fdcc9;
+  --peach: #ffc2a8;
+  --banner: #ffe3ec;
+  --font-display: "Fredoka", "Baloo 2", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --font-body: "Nunito", "Avenir Next", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #121715; --surface: #1a211e; --ink: #e8ece8; --muted: #9ba7a1; --line: #2c3632;
-    --accent: #6fbf9f; --accent-ink: #0c1411;
-    --map-land: #1f2724; --map-arr: #34403b; --map-label: #5c6a64; --water: #2c5566;
+    --bg: #21151e; --surface: #2c1e29; --ink: #fbeaf1; --muted: #c9a9bf; --line: #4a3343;
+    --accent: #ff8fab; --accent-ink: #2a1020; --banner: #3a2433;
+    --butter: #e8b94a; --lilac: #9d89d9; --mint: #6fb9a4; --peach: #e09a7e;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #121715; --surface: #1a211e; --ink: #e8ece8; --muted: #9ba7a1; --line: #2c3632;
-  --accent: #6fbf9f; --accent-ink: #0c1411;
-  --map-land: #1f2724; --map-arr: #34403b; --map-label: #5c6a64; --water: #2c5566;
+  --bg: #21151e; --surface: #2c1e29; --ink: #fbeaf1; --muted: #c9a9bf; --line: #4a3343;
+  --accent: #ff8fab; --accent-ink: #2a1020; --banner: #3a2433;
+  --butter: #e8b94a; --lilac: #9d89d9; --mint: #6fb9a4; --peach: #e09a7e;
   color-scheme: dark;
 }
 
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
 .wrap { max-width: 900px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; display: grid; gap: 22px; }
 
-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
-.eyebrow { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
-h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(34px, 6vw, 54px); line-height: 1.02; margin: 0; text-wrap: balance; }
-h1 em { font-weight: 500; color: var(--accent); }
+header { position: relative; overflow: hidden; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px;
+  background: var(--banner); border-radius: 28px; padding: 26px 24px;
+  background-image:
+    radial-gradient(circle at 3% 12%, var(--butter) 0 5px, transparent 6px),
+    radial-gradient(circle at 18% 96%, var(--lilac) 0 4px, transparent 5px),
+    radial-gradient(circle at 52% 4%, var(--mint) 0 4px, transparent 5px),
+    radial-gradient(circle at 70% 97%, var(--accent) 0 3px, transparent 4px),
+    radial-gradient(circle at 88% 5%, var(--peach) 0 5px, transparent 6px),
+    radial-gradient(circle at 98% 55%, var(--butter) 0 4px, transparent 5px),
+    radial-gradient(circle at 1% 70%, var(--peach) 0 3px, transparent 4px); }
+.hello { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.cake { flex: none; width: 64px; height: 64px; animation: bob 3s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-5px) rotate(-3deg); } }
+.hotel { background: var(--surface); border-radius: 16px; padding: 10px 14px; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 4px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 6vw, 48px); line-height: 1.05; margin: 0; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--accent); }
+.sub { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
 .hotel { display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); min-width: 0; }
-.hotel b { color: var(--ink); font-weight: 500; }
-.hpin { flex: none; width: 28px; height: 28px; border-radius: 6px; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 600; font-size: 14px; }
-.sample { font-size: 13px; color: var(--muted); border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; margin: 0; }
+.hotel b { color: var(--ink); font-weight: 700; }
+.hpin { flex: none; width: 30px; height: 30px; border-radius: 10px; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-weight: 600; font-size: 14px; }
+.sample { font-size: 13px; color: var(--muted); border: 2px dashed var(--line); border-radius: 14px; padding: 8px 12px; margin: 0; }
 
 nav.days { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: 8px; }
-@media (max-width: 520px) { nav.days { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-nav.days button { min-width: 0; font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 8px 16px 8px 8px; display: flex; align-items: center; gap: 10px; text-align: left; }
+@media (max-width: 520px) { nav.days { grid-template-columns: repeat(2, minmax(0, 1fr)); } nav.days button:last-child:nth-child(odd) { grid-column: 1 / -1; } }
+nav.days button { min-width: 0; font: inherit; cursor: pointer; border: 2px solid var(--line); transition: transform .15s; background: var(--surface); color: var(--ink); border-radius: 999px; padding: 8px 16px 8px 8px; display: flex; align-items: center; gap: 10px; text-align: left; }
 nav.days button .n { width: 30px; height: 30px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; font-weight: 600; font-variant-numeric: tabular-nums; }
 nav.days button .n { flex: none; }
 nav.days button .t { display: grid; line-height: 1.15; min-width: 0; }
 nav.days button .t small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-nav.days button { border-radius: 14px; padding: 8px 12px 8px 8px; }
+nav.days button { border-radius: 20px; padding: 8px 12px 8px 8px; }
+nav.days button:hover { transform: translateY(-2px); }
+nav.days button .n { color: #3b2a3a; font-family: var(--font-display); }
+nav.days button:nth-child(5n+1) .n { background: var(--peach); }
+nav.days button:nth-child(5n+2) .n { background: var(--butter); }
+nav.days button:nth-child(5n+3) .n { background: var(--mint); }
+nav.days button:nth-child(5n+4) .n { background: var(--lilac); }
+nav.days button:nth-child(5n+5) .n { background: #ffb3c7; }
 nav.days button .t small { color: var(--muted); font-size: 12px; }
-nav.days button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-nav.days button[aria-selected="true"] .n { background: var(--accent-ink); color: var(--accent); }
+nav.days button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 16px -8px var(--accent); }
 nav.days button[aria-selected="true"] .t small { color: inherit; opacity: .8; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; max-width: 860px; width: 100%; margin: 0 auto; }
 
 .dayhead { display: grid; gap: 2px; margin-bottom: 14px; }
-.dayhead h2 { font-family: var(--font-display); font-weight: 500; font-style: italic; font-size: 30px; line-height: 1.1; margin: 0; text-wrap: balance; }
+.dayhead h2 { font-family: var(--font-display); font-weight: 600; font-size: 30px; line-height: 1.1; margin: 0; text-wrap: balance; }
 .dayhead p { margin: 0; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
 
 ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
@@ -87,10 +108,10 @@ ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 .ev:first-child .rail::before { top: 18px; }
 .ev:last-child .rail::before { bottom: calc(100% - 18px); }
 .dot { position: relative; z-index: 1; margin-top: 4px; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; }
-.dot.h { border-radius: 6px; }
+.dot.h { border-radius: 9px; background: var(--accent); color: var(--accent-ink); }
 .dot.open, .dot.tbd { background: var(--bg); color: var(--muted); border: 2px dashed var(--muted); }
 .body h3.muted { color: var(--muted); font-style: italic; font-weight: 400; }
-.pin.tbd { background: #fff; color: #5d6863; border: 2px dashed #5d6863; }
+.pin.tbd { background: #fff; color: #8a6f86; border: 2px dashed #8a6f86; }
 .body { padding-block: 4px 18px; min-width: 0; }
 .stop { cursor: pointer; border-radius: 10px; padding: 2px 8px 6px; margin-left: -8px; transition: background .15s; }
 .stop:hover, .stop.hl { background: var(--surface); }
@@ -106,21 +127,22 @@ ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 .legcard a { color: var(--accent); font-size: 13px; text-decoration: none; border-bottom: 1px solid currentColor; }
 .badge { flex: none; white-space: nowrap; display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1; }
 .badge.walk { background: var(--bg); border: 1px dashed var(--muted); color: var(--muted); }
+.badge.taxi { border-radius: 4px; background: #3a3f3c; color: #fff; font-size: 11px; }
 .badge.bus { border-radius: 4px; background: #2f6fb3; color: #fff; }
 .badge.rer { border-radius: 5px; }
 .mins { font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .mapcol { display: grid; gap: 10px; }
 .maphead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
-.maphead h2 { font-family: var(--font-display); font-weight: 500; font-style: italic; font-size: 24px; margin: 0; }
-.gmaps { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--accent-ink); text-decoration: none; font-weight: 500; font-size: 15px; padding: 10px 16px; border-radius: 10px; }
+.maphead h2 { font-family: var(--font-display); font-weight: 600; font-size: 24px; margin: 0; }
+.gmaps { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: var(--accent-ink); text-decoration: none; font-weight: 500; font-size: 15px; padding: 10px 18px; border-radius: 999px; }
 .gmaps:hover { filter: brightness(1.08); }
-.mapbox { position: relative; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 10; max-width: 100%; }
+.mapbox { position: relative; background: var(--surface); border: 2px solid var(--line); border-radius: 24px; overflow: hidden; aspect-ratio: 16 / 10; max-width: 100%; }
 @media (max-width: 600px) { .mapbox { aspect-ratio: 1 / 1; } }
 #map { position: absolute; inset: 0; background: var(--bg); }
 .mapbox .ctrls { z-index: 500; }
-.pin { width: 28px; height: 28px; border-radius: 50%; background: #18201d; color: #fff; border: 2px solid #fff; display: grid; place-items: center; font: 600 13px/1 var(--font-body); box-shadow: 0 1px 4px rgba(0,0,0,.35); cursor: pointer; transition: transform .15s; }
-.pin.h { border-radius: 7px; }
+.pin { width: 28px; height: 28px; border-radius: 50%; background: #3b2a3a; color: #fff; border: 2px solid #fff; display: grid; place-items: center; font: 600 13px/1 var(--font-body); box-shadow: 0 1px 4px rgba(0,0,0,.35); cursor: pointer; transition: transform .15s; }
+.pin.h { border-radius: 9px; background: #e2557a; }
 .pin.hl { background: var(--accent); color: var(--accent-ink); transform: scale(1.25); }
 .leaflet-div-icon { background: none; border: 0; }
 .maptip { margin: 0; font-size: 13px; color: var(--muted); }
@@ -146,16 +168,29 @@ svg text { font-family: var(--font-body); }
 .mk.hl text { fill: var(--accent-ink); }
 .mklbl { fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-linejoin: round; font-weight: 500; pointer-events: none; }
 
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
 
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div>
-      <p class="eyebrow" id="dates"></p>
-      <h1 id="title"></h1>
+    <div class="hello">
+      <svg class="cake" viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="31" y="6" width="3" height="12" rx="1.5" fill="#ffd36e"/>
+        <path d="M32.5 1c3 3.5 3 6.5 0 8.5c-3-2-3-5 0-8.5z" fill="#ff9b5e"/>
+        <rect x="12" y="20" width="41" height="16" rx="7" fill="#ffc2d1"/>
+        <path d="M12 27c4 4 7 4 10 0s7 4 10 0 7 4 10 0 7 4 11 0v-1H12z" fill="#ffffff"/>
+        <rect x="6" y="36" width="53" height="20" rx="8" fill="#e2557a"/>
+        <path d="M6 43c5 4 8 4 11 0s8 4 11 0 8 4 11 0 8 4 11 0 6 3 9 0v-2H6z" fill="#ffd9e3"/>
+        <circle cx="16" cy="51" r="2" fill="#ffd36e"/><circle cx="29" cy="50" r="2" fill="#9fdcc9"/><circle cx="42" cy="51" r="2" fill="#c9b8f5"/><circle cx="52" cy="49" r="2" fill="#ffd36e"/>
+        <rect x="3" y="56" width="59" height="4" rx="2" fill="#f4d9e2"/>
+      </svg>
+      <div>
+        <p class="eyebrow" id="dates"></p>
+        <h1 id="title"></h1>
+        <p class="sub">Five days of Paris, pastries and celebrating</p>
+      </div>
     </div>
     <div class="hotel"><span class="hpin">H</span><span id="hotel"></span></div>
   </header>
@@ -194,7 +229,7 @@ svg text { font-family: var(--font-body); }
    modes: "metro" | "rer" | "bus" | "walk"
    ============================================================ */
 const TRIP = {
-  title: "Paris",
+  title: "Happy birthday, Xinang!",
   startDate: "2026-10-10",   // Day 1
   isSample: true,
   hotel: { name: "Hôtel Armoni", area: "7 Villa Berthier, 17e · near Porte de Champerret (Metro 3)", gq: "Hôtel Armoni, 7 Villa Berthier, 75017 Paris", lat: 48.8869, lon: 2.2957 },
@@ -233,49 +268,51 @@ const TRIP = {
       open: "The rest of the day is still open."
     },
     {
-      title: "Opéra & Montmartre",
-      sample: true,
-      start: "09:30",
-      stops: [
-        { name: "Palais Garnier", lat: 48.8720, lon: 2.3316, stay: 75,
-          go: { mode: "metro", line: "8", min: 20, from: "Bastille", to: "Opéra", how: "Walk 5 min to Bastille first" },
-          note: "Self-guided visit; the Chagall ceiling is in the auditorium." },
-        { name: "Galeries Lafayette rooftop", lat: 48.8738, lon: 2.3320, stay: 60,
-          go: { mode: "walk", min: 4, how: "Walk up Boulevard Haussmann" },
-          note: "Free rooftop terrace, open during store hours." },
-        { name: "Abbesses (lunch)", gq: "Place des Abbesses, Paris", lat: 48.8845, lon: 2.3385, stay: 60,
-          go: { mode: "metro", line: "12", min: 18, from: "Trinité–d'Estienne d'Orves", to: "Abbesses" },
-          note: "Abbesses is a deep station: take the lift, not the 200 stairs." },
-        { name: "Sacré-Cœur", lat: 48.8867, lon: 2.3431, stay: 60,
-          go: { mode: "walk", min: 8, how: "Walk up, or take the funicular with a metro ticket" } },
-        { name: "Place du Tertre", lat: 48.8865, lon: 2.3408, stay: 40,
-          go: { mode: "walk", min: 3, how: "Walk along Rue Norvins" } },
-        { name: "Dinner in South Pigalle", gq: "Rue des Martyrs, Paris", lat: 48.8800, lon: 2.3375, stay: 90,
-          go: { mode: "walk", min: 14, how: "Walk down past the Moulin Rouge" } }
-      ],
-      back: { mode: "metro", line: "12", min: 30, from: "Pigalle", to: "Concorde", how: "then line 1 to Saint-Paul" }
-    },
-    {
-      title: "Le Marais & Canal Saint-Martin",
-      sample: true,
+      title: "Notre-Dame & Le Marais",
+      flexible: true,
       start: "10:00",
       stops: [
-        { name: "Place des Vosges", lat: 48.8556, lon: 2.3655, stay: 30,
-          go: { mode: "walk", min: 6, how: "Walk along Rue Saint-Antoine" },
-          note: "Victor Hugo's house is in the corner, free to visit." },
-        { name: "Musée Picasso", lat: 48.8598, lon: 2.3622, stay: 90,
-          go: { mode: "walk", min: 7, how: "Walk up Rue de Turenne" } },
-        { name: "Marché des Enfants Rouges", lat: 48.8628, lon: 2.3618, stay: 60,
-          go: { mode: "walk", min: 5, how: "Walk to Rue de Bretagne" },
-          note: "Oldest covered market in Paris. Get there before 12:30 for a seat." },
-        { name: "Centre Pompidou", lat: 48.8607, lon: 2.3522, stay: 120,
-          go: { mode: "walk", min: 12, how: "Walk via Rue Rambuteau" },
-          note: "Check opening status: the building is closing for renovation in stages." },
-        { name: "Canal Saint-Martin", lat: 48.8710, lon: 2.3650, stay: 75,
-          go: { mode: "metro", line: "11", min: 15, from: "Rambuteau", to: "République", how: "then walk 8 min" },
-          note: "Walk the iron footbridges; picnic on the quai at sunset." }
+        { name: "Notre-Dame de Paris", lat: 48.8530, lon: 2.3499, stay: 75,
+          go: { mode: "rer", line: "C", min: 35, from: "Pereire–Levallois", to: "Saint-Michel Notre-Dame", how: "walk 10 min to the station first" },
+          note: "Open every day and free to enter; reserve a time slot online to skip the line." },
+        { name: "Carré Pain de Mie", gq: "Carré Pain de Mie, 5 Rue Rambuteau, 75004 Paris", lat: 48.8605, lon: 2.3566, stay: 45,
+          go: { mode: "walk", min: 15, how: "Walk across Pont d'Arcole and up Rue du Temple" },
+          note: "5 Rue Rambuteau, 4e. A Japanese-style bakery (shokupan sandwiches, desserts) open daily 10:00–20:00, so it works better for lunch than dinner." },
+        { name: "Le Marais", gq: "Rue des Rosiers, Paris", lat: 48.8571, lon: 2.3590, stay: 150,
+          go: { mode: "walk", min: 6, how: "Walk to Rue des Rosiers" },
+          note: "Wander Rue des Rosiers, Rue Vieille-du-Temple and Place des Vosges. It's a Monday: Musée Picasso and Musée Carnavalet are closed, but shops and Place des Vosges are open." }
       ],
-      back: { mode: "metro", line: "5", min: 22, from: "Jacques Bonsergent", to: "Bastille", how: "then walk 6 min" }
+      back: { mode: "rer", line: "C", min: 45, from: "Saint-Michel Notre-Dame", to: "Pereire–Levallois", how: "train toward Pontoise; walk 12 min to the station and 10 min to the hotel" }
+    },
+    {
+      title: "Shopping & Le Taillevent",
+      flexible: true,
+      start: "11:00",
+      stops: [
+        { name: "Galeries Lafayette Haussmann", lat: 48.8738, lon: 2.3320, stay: 240,
+          go: { mode: "metro", line: "3", min: 20, from: "Porte de Champerret", to: "Havre-Caumartin", how: "then walk 5 min" },
+          note: "Open daily. Don't miss the free rooftop terrace and the glass dome." },
+        { hotel: true, name: "Hôtel Armoni: dress up", stay: 90,
+          go: { mode: "metro", line: "3", min: 25, from: "Havre-Caumartin", to: "Porte de Champerret", how: "then walk 5 min" } },
+        { name: "Le Taillevent", gq: "Le Taillevent, 15 Rue Lamennais, 75008 Paris", lat: 48.8743, lon: 2.3021, at: "19:15", stay: 165,
+          go: { mode: "taxi", min: 15, how: "To 15 Rue Lamennais, 8e" },
+          note: "Dinner service starts at 19:15. Smart dress expected." }
+      ],
+      back: { mode: "taxi", min: 15, how: "Back to the hotel" }
+    },
+    {
+      title: "Lunch at Eels & home",
+      flexible: true,
+      start: "12:00",
+      morning: "The morning is free.",
+      stops: [
+        { name: "Eels", gq: "Eels, 27 Rue d'Hauteville, 75010 Paris", lat: 48.8716, lon: 2.3500, at: "13:00", stay: 105,
+          go: { mode: "metro", line: "3", min: 35, from: "Porte de Champerret", to: "Sentier", how: "then walk 10 min. With luggage, a taxi takes about 25 min." },
+          note: "27 Rue d'Hauteville, 10e. Lunch is served Tue–Sat 12:30–14:00." },
+        { name: "Gare du Nord: Eurostar 16:47", gq: "Gare du Nord, Paris", lat: 48.8809, lon: 2.3553, at: "15:15", hideAt: true, stay: 92,
+          go: { mode: "walk", min: 15, how: "Walk up Rue d'Hauteville and Rue La Fayette" },
+          note: "Eurostar check-in closes 30 min before departure. If you leave bags at the hotel after checking out, add about 45 min to collect them." }
+      ]
     }
   ]
 };
@@ -305,18 +342,20 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
 const fmt = m => { m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0"); };
 const dur = m => m < 60 ? m + " min" : Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) : "");
-const MODE_WORD = { metro: "Metro", rer: "RER", bus: "Bus", walk: "Walk" };
-const dirUrl = (a, b, mode) => `https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=${mode === "walk" ? "walking" : "transit"}`;
+const MODE_WORD = { metro: "Metro", rer: "RER", bus: "Bus", walk: "Walk", taxi: "Taxi" };
+const dirUrl = (a, b, mode) => `https://www.google.com/maps/dir/?api=1&origin=${a.lat},${a.lon}&destination=${b.lat},${b.lon}&travelmode=${mode === "walk" ? "walking" : mode === "taxi" ? "driving" : "transit"}`;
 const routeUrl = pts => "https://www.google.com/maps/dir/" + pts.map(p => encodeURIComponent(p.gq || p.name + ", Paris")).join("/");
 const placeUrl = p => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + " Paris")}`;
 
 function legColor(go) {
   if (go.mode === "walk") return null;
   if (go.mode === "bus") return "#2f6fb3";
+  if (go.mode === "taxi") return "#3a3f3c";
   return (LINE_COLORS[go.line] || ["#555", "#fff"])[0];
 }
 function badge(go) {
   if (go.mode === "walk") return `<span class="badge walk" title="Walk">⋯</span>`;
+  if (go.mode === "taxi") return `<span class="badge taxi" title="Taxi">Taxi</span>`;
   if (go.mode === "bus") return `<span class="badge bus" title="Bus ${esc(go.line)}">${esc(go.line || "Bus")}</span>`;
   const [bg, fg] = LINE_COLORS[go.line] || ["#555", "#fff"];
   return `<span class="badge ${go.mode}" style="background:${bg};color:${fg}" title="${MODE_WORD[go.mode]} ${esc(go.line)}">${go.mode === "rer" ? "RER " : ""}${esc(go.line)}</span>`;
@@ -327,16 +366,21 @@ function schedule(day) {
   const H = TRIP.hotel;
   let t = toMin(day.start);
   const F = day.from;
-  const rows = [F ? { type: "start", label: F.label || F.name, note: F.note, t, place: F } : { type: "hotel", label: "Depart hotel", t, place: H }];
+  let timed = !day.flexible;        // flexible days only show clock times from a fixed (`at`) stop onward
+  const rows = [];
+  if (day.morning) rows.push({ type: "open", label: day.morning, sub: "", t });
+  rows.push(F ? { type: "start", label: F.label || F.name, note: F.note, t, place: F, timed: true } : { type: "hotel", label: "Depart hotel", t, place: H, timed });
   let prev = F || H;
   day.stops.forEach((s, i) => {
     if (s.at) {                       // fixed arrival time: stay longer at the previous stop
       const dep = toMin(s.at) - s.go.min, last = rows[rows.length - 1];
-      if (dep > t) { if (last.type === "stop") last.until = dep; t = dep; }
+      if (last.type === "stop") last.until = dep; else last.t = dep;
+      last.leaveBy = dep;
+      t = dep; timed = true;
     }
     rows.push({ type: "leg", go: s.go, from: prev, to: s, t });
     t += s.go.min;
-    rows.push({ type: "stop", n: i + 1, label: stopLabel(day, i), stop: s, t, until: t + s.stay });
+    rows.push({ type: "stop", n: i + 1, label: stopLabel(day, i), stop: s, t, until: t + s.stay, timed });
     t = rows[rows.length - 1].until = t + s.stay;
     prev = s;
   });
@@ -344,16 +388,16 @@ function schedule(day) {
   if (day.back) {
     rows.push({ type: "leg", go: day.back, from: prev, to: H, t });
     t += day.back.min;
-    rows.push({ type: "hotel", label: "Back at hotel", t, place: H });
+    rows.push({ type: "hotel", label: "Back at hotel", t, place: H, timed });
   }
   return rows;
 }
 
 /* ---------- header + tabs ---------- */
-$("#title").innerHTML = esc(TRIP.title) + " <em>itinerary</em>";
+$("#title").innerHTML = esc(TRIP.title).replace(/(\w+)!$/, "<em>$1!</em>");
 const dayDate = i => { const [y, m, d] = TRIP.startDate.split("-").map(Number); return new Date(Date.UTC(y, m - 1, d + i)); };
 const fmtDate = (dt, opts) => dt.toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
-$("#dates").textContent = fmtDate(dayDate(0), { day: "numeric" }) + "–" + fmtDate(dayDate(TRIP.days.length - 1), { day: "numeric", month: "long", year: "numeric" });
+$("#dates").textContent = "Paris · " + fmtDate(dayDate(0), { day: "numeric" }) + "–" + fmtDate(dayDate(TRIP.days.length - 1), { day: "numeric", month: "long", year: "numeric" });
 $("#hotel").innerHTML = `<b>${esc(TRIP.hotel.name)}</b><br>${esc(TRIP.hotel.area || "")}`;
 
 
@@ -377,16 +421,21 @@ function renderTimeline(day) {
   const stops = day.stops.filter(x => !x.hotel).length, travel = rows.filter(r => r.type === "leg").reduce((a, r) => a + r.go.min, 0);
   $("#dayTitle").textContent = day.title;
   const di = TRIP.days.indexOf(day);
-  $("#daySum").textContent = `${fmtDate(dayDate(di), { weekday: "long", day: "numeric", month: "long" })} · ${fmt(rows[0].t)} – ${fmt(rows[rows.length - 1].t)} · ${stops} stops · ${dur(travel)} getting around`;
+  const when = fmtDate(dayDate(di), { weekday: "long", day: "numeric", month: "long" });
+  const fixedStops = day.stops.filter(x => x.at && !x.hideAt).map(x => `${x.name.split(":")[0]} ${x.at}`);
+  $("#daySum").textContent = day.flexible
+    ? `${when} · flexible day${fixedStops.length ? " · " + fixedStops.join(", ") : ""} · ${dur(travel)} getting around`
+    : `${when} · ${fmt(rows[0].t)} – ${fmt(rows[rows.length - 1].t)} · ${stops} stops · ${dur(travel)} getting around`;
+  const clock = r => r.timed ? fmt(r.t) : r.leaveBy != null ? `<small>leave by</small>${fmt(r.leaveBy)}` : "";
   $("#tl").innerHTML = rows.map(r => {
     if (r.type === "hotel") return `
-      <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">H</span></div>
+      <li class="ev"><div class="time">${clock(r)}</div><div class="rail"><span class="dot h">H</span></div>
       <div class="body"><h3>${esc(r.label)}</h3><div class="meta">${esc(TRIP.hotel.name)}</div></div></li>`;
     if (r.type === "open") return `
       <li class="ev"><div class="time"></div><div class="rail"><span class="dot open">…</span></div>
-      <div class="body"><h3 class="muted">${esc(r.label)}</h3><div class="meta">Tell Claude what you'd like to add.</div></div></li>`;
+      <div class="body"><h3 class="muted">${esc(r.label)}</h3>${r.sub === "" ? "" : `<div class="meta">Tell Claude what you'd like to add.</div>`}</div></li>`;
     if (r.type === "start") return `
-      <li class="ev"><div class="time">${fmt(r.t)}</div><div class="rail"><span class="dot h">${esc(r.place.pin || "▸")}</span></div>
+      <li class="ev"><div class="time">${clock(r)}</div><div class="rail"><span class="dot h">${esc(r.place.pin || "▸")}</span></div>
       <div class="body"><h3>${esc(r.label)}</h3>${r.note ? `<div class="meta">${esc(r.note)}</div>` : ""}</div></li>`;
     if (r.type === "leg") {
       const g = r.go;
@@ -398,12 +447,14 @@ function renderTimeline(day) {
       <span>${route}${extra}</span><span class="mins">${g.min} min</span>
       <a href="${dirUrl(r.from, r.to, g.mode)}" target="_blank" rel="noopener">Directions</a></div></div></li>`;
     }
-    const s = r.stop, fixed = s.at ? " · booked for " + s.at : "";
+    const s = r.stop, fixed = s.at && !s.hideAt ? " · booked for " + s.at : "";
+    const timing = r.timed ? `${dur(r.until - r.t)} here${fixed} · leave at ${fmt(r.until)}`
+      : `about ${dur(s.stay)}${r.leaveBy != null ? ` · leave by ${fmt(r.leaveBy)}` : ""}`;
     return `
-      <li class="ev"><div class="time">${fmt(r.t)}<small>arrive</small></div><div class="rail"><span class="dot${s.hotel ? " h" : ""}${s.tbd ? " tbd" : ""}">${r.label}</span></div>
+      <li class="ev"><div class="time">${r.timed ? `${fmt(r.t)}<small>arrive</small>` : clock(r)}</div><div class="rail"><span class="dot${s.hotel ? " h" : ""}${s.tbd ? " tbd" : ""}">${r.label}</span></div>
       <div class="body"><div class="stop" data-n="${r.n}" tabindex="0">
         <h3>${esc(s.name)}</h3>
-        <div class="meta">${dur(r.until - r.t)} here${fixed} · leave at ${fmt(r.until)} · <a href="${s.hotel ? `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}` : placeUrl(s)}" target="_blank" rel="noopener" style="color:inherit">map</a></div>
+        <div class="meta">${timing} · <a href="${s.hotel ? `https://www.google.com/maps/search/?api=1&query=${s.lat},${s.lon}` : placeUrl(s)}" target="_blank" rel="noopener" style="color:inherit">map</a></div>
         ${s.note ? `<p class="note">${esc(s.note)}</p>` : ""}
       </div></div></li>`;
   }).join("");
@@ -450,7 +501,7 @@ const GoogleBase = {
   },
   clear() { overlays.forEach(o => o.setMap ? o.setMap(null) : (o.map = null)); overlays = []; },
   line(a, b, color, walk, faded) {
-    const opts = { path: [{ lat: a.lat, lng: a.lon }, { lat: b.lat, lng: b.lon }], map, strokeColor: walk ? "#5d6863" : color, strokeWeight: 5, strokeOpacity: faded ? .45 : .95 };
+    const opts = { path: [{ lat: a.lat, lng: a.lon }, { lat: b.lat, lng: b.lon }], map, strokeColor: walk ? "#8a6f86" : color, strokeWeight: 5, strokeOpacity: faded ? .45 : .95 };
     if (walk) Object.assign(opts, { strokeOpacity: 0, icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: faded ? .5 : .9, strokeWeight: 4, scale: 2 }, offset: "0", repeat: "12px" }] });
     overlays.push(new google.maps.Polyline(opts));
   },
@@ -477,7 +528,7 @@ const OsmBase = {
   },
   clear() { overlays.forEach(o => o.remove()); overlays = []; },
   line(a, b, color, walk, faded) {
-    overlays.push(L.polyline([[a.lat, a.lon], [b.lat, b.lon]], { color: walk ? "#5d6863" : color, weight: walk ? 4 : 5,
+    overlays.push(L.polyline([[a.lat, a.lon], [b.lat, b.lon]], { color: walk ? "#8a6f86" : color, weight: walk ? 4 : 5,
       opacity: faded ? .45 : .95, dashArray: walk ? "1 9" : null, lineCap: "round" }).addTo(map));
   },
   marker(p, el, n) {
