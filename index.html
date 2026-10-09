@@ -16,35 +16,26 @@ body { margin: 0; -webkit-font-smoothing: antialiased; }
 img { max-width: 100%; }
 /* Layout: a confetti birthday banner, wrapping day "candy" buttons, the itinerary, then the map below. */
 :root {
-  --bg: #fff5f7;          /* blush */
+  --bg: #fffdfa;          /* cream */
   --surface: #ffffff;
-  --ink: #3b2a3a;         /* plum */
-  --muted: #8a6f86;
-  --line: #f4d9e2;
-  --accent: #e2557a;      /* raspberry frosting */
-  --accent-ink: #ffffff;
-  --butter: #ffd36e;
-  --lilac: #c9b8f5;
-  --mint: #9fdcc9;
-  --peach: #ffc2a8;
-  --banner: #ffe3ec;
+  --ink: #5a5358;         /* soft charcoal, like a grey kitty's outline */
+  --muted: #9a9297;
+  --line: #efe7e3;
+  --accent: #f5a9bc;      /* pastel pink (fills) */
+  --accent-strong: #c65f7d; /* readable pink for text and links */
+  --accent-ink: #4f474c;
+  --butter: #fde8a6;
+  --lilac: #ddd4f6;
+  --mint: #cdebdc;
+  --peach: #fbd5c6;
+  --sky: #cfe5f6;
+  --banner: #f8f1ea;      /* warm oat */
+  --kitty: #b7b1b5;
   --font-display: "Fredoka", "Baloo 2", "Arial Rounded MT Bold", system-ui, sans-serif;
   --font-body: "Nunito", "Avenir Next", system-ui, sans-serif;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #21151e; --surface: #2c1e29; --ink: #fbeaf1; --muted: #c9a9bf; --line: #4a3343;
-    --accent: #ff8fab; --accent-ink: #2a1020; --banner: #3a2433;
-    --butter: #e8b94a; --lilac: #9d89d9; --mint: #6fb9a4; --peach: #e09a7e;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #21151e; --surface: #2c1e29; --ink: #fbeaf1; --muted: #c9a9bf; --line: #4a3343;
-  --accent: #ff8fab; --accent-ink: #2a1020; --banner: #3a2433;
-  --butter: #e8b94a; --lilac: #9d89d9; --mint: #6fb9a4; --peach: #e09a7e;
-  color-scheme: dark;
-}
+/* Always the light pastel look, even when the device is in dark mode. */
+:root, :root[data-theme="dark"] { color-scheme: light; }
 
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
 .wrap { max-width: 900px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; display: grid; gap: 22px; }
@@ -60,12 +51,12 @@ header { position: relative; overflow: hidden; display: flex; flex-wrap: wrap; a
     radial-gradient(circle at 98% 55%, var(--butter) 0 4px, transparent 5px),
     radial-gradient(circle at 1% 70%, var(--peach) 0 3px, transparent 4px); }
 .hello { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.cake { flex: none; width: 64px; height: 64px; animation: bob 3s ease-in-out infinite; }
+.cake { flex: none; width: 76px; height: 70px; animation: bob 3s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(-5px) rotate(-3deg); } }
 .hotel { background: var(--surface); border-radius: 16px; padding: 10px 14px; }
-.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 4px; }
+.eyebrow { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-strong); margin: 0 0 4px; }
 h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 6vw, 48px); line-height: 1.05; margin: 0; text-wrap: balance; }
-h1 em { font-style: normal; color: var(--accent); }
+h1 em { font-style: normal; color: var(--accent-strong); }
 .sub { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
 .hotel { display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); min-width: 0; }
 .hotel b { color: var(--ink); font-weight: 700; }
@@ -81,16 +72,16 @@ nav.days button .t { display: grid; line-height: 1.15; min-width: 0; }
 nav.days button .t small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 nav.days button { border-radius: 20px; padding: 8px 12px 8px 8px; }
 nav.days button:hover { transform: translateY(-2px); }
-nav.days button .n { color: #3b2a3a; font-family: var(--font-display); }
+nav.days button .n { color: #4f474c; font-family: var(--font-display); }
 nav.days button:nth-child(5n+1) .n { background: var(--peach); }
 nav.days button:nth-child(5n+2) .n { background: var(--butter); }
 nav.days button:nth-child(5n+3) .n { background: var(--mint); }
 nav.days button:nth-child(5n+4) .n { background: var(--lilac); }
-nav.days button:nth-child(5n+5) .n { background: #ffb3c7; }
+nav.days button:nth-child(5n+5) .n { background: var(--sky); }
 nav.days button .t small { color: var(--muted); font-size: 12px; }
-nav.days button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 16px -8px var(--accent); }
+nav.days button[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); box-shadow: 0 6px 16px -8px var(--accent-strong); }
 nav.days button[aria-selected="true"] .t small { color: inherit; opacity: .8; }
-button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 2px; }
 
 main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; max-width: 860px; width: 100%; margin: 0 auto; }
 
@@ -109,9 +100,10 @@ ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 .ev:last-child .rail::before { bottom: calc(100% - 18px); }
 .dot { position: relative; z-index: 1; margin-top: 4px; width: 28px; height: 28px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; }
 .dot.h { border-radius: 9px; background: var(--accent); color: var(--accent-ink); }
+.dot { background: #8a8388; color: #fff; }
 .dot.open, .dot.tbd { background: var(--bg); color: var(--muted); border: 2px dashed var(--muted); }
 .body h3.muted { color: var(--muted); font-style: italic; font-weight: 400; }
-.pin.tbd { background: #fff; color: #8a6f86; border: 2px dashed #8a6f86; }
+.pin.tbd { background: #fff; color: #9a9297; border: 2px dashed #9a9297; }
 .body { padding-block: 4px 18px; min-width: 0; }
 .stop { cursor: pointer; border-radius: 10px; padding: 2px 8px 6px; margin-left: -8px; transition: background .15s; }
 .stop:hover, .stop.hl { background: var(--surface); }
@@ -124,7 +116,7 @@ ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 .leg .body { padding-block: 6px 16px; }
 .legcard { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 14px; color: var(--muted); }
 .legcard .how { color: var(--ink); }
-.legcard a { color: var(--accent); font-size: 13px; text-decoration: none; border-bottom: 1px solid currentColor; }
+.legcard a { color: var(--accent-strong); font-size: 13px; text-decoration: none; border-bottom: 1px solid currentColor; }
 .badge { flex: none; white-space: nowrap; display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding: 0 5px; border-radius: 12px; font-size: 13px; font-weight: 600; line-height: 1; }
 .badge.walk { background: var(--bg); border: 1px dashed var(--muted); color: var(--muted); }
 .badge.taxi { border-radius: 4px; background: #3a3f3c; color: #fff; font-size: 11px; }
@@ -141,12 +133,12 @@ ol.tl { list-style: none; margin: 0; padding: 0; display: grid; }
 @media (max-width: 600px) { .mapbox { aspect-ratio: 1 / 1; } }
 #map { position: absolute; inset: 0; background: var(--bg); }
 .mapbox .ctrls { z-index: 500; }
-.pin { width: 28px; height: 28px; border-radius: 50%; background: #3b2a3a; color: #fff; border: 2px solid #fff; display: grid; place-items: center; font: 600 13px/1 var(--font-body); box-shadow: 0 1px 4px rgba(0,0,0,.35); cursor: pointer; transition: transform .15s; }
-.pin.h { border-radius: 9px; background: #e2557a; }
+.pin { width: 28px; height: 28px; border-radius: 50%; background: #7a7378; color: #fff; border: 2px solid #fff; display: grid; place-items: center; font: 600 13px/1 var(--font-body); box-shadow: 0 1px 4px rgba(0,0,0,.35); cursor: pointer; transition: transform .15s; }
+.pin.h { border-radius: 9px; background: #f5a9bc; color: #4f474c; }
 .pin.hl { background: var(--accent); color: var(--accent-ink); transform: scale(1.25); }
 .leaflet-div-icon { background: none; border: 0; }
 .maptip { margin: 0; font-size: 13px; color: var(--muted); }
-.linkbtn { font: inherit; background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; cursor: pointer; }
+.linkbtn { font: inherit; background: none; border: 0; padding: 0; color: var(--accent-strong); text-decoration: underline; cursor: pointer; }
 #map { display: block; background: var(--bg); width: 100%; height: 100%; touch-action: none; cursor: grab; }
 #map.drag { cursor: grabbing; }
 .ctrls { position: absolute; top: 10px; right: 10px; display: grid; gap: 6px; }
@@ -176,15 +168,16 @@ svg text { font-family: var(--font-body); }
 <div class="wrap">
   <header>
     <div class="hello">
-      <svg class="cake" viewBox="0 0 64 64" aria-hidden="true">
-        <rect x="31" y="6" width="3" height="12" rx="1.5" fill="#ffd36e"/>
-        <path d="M32.5 1c3 3.5 3 6.5 0 8.5c-3-2-3-5 0-8.5z" fill="#ff9b5e"/>
-        <rect x="12" y="20" width="41" height="16" rx="7" fill="#ffc2d1"/>
-        <path d="M12 27c4 4 7 4 10 0s7 4 10 0 7 4 10 0 7 4 11 0v-1H12z" fill="#ffffff"/>
-        <rect x="6" y="36" width="53" height="20" rx="8" fill="#e2557a"/>
-        <path d="M6 43c5 4 8 4 11 0s8 4 11 0 8 4 11 0 8 4 11 0 6 3 9 0v-2H6z" fill="#ffd9e3"/>
-        <circle cx="16" cy="51" r="2" fill="#ffd36e"/><circle cx="29" cy="50" r="2" fill="#9fdcc9"/><circle cx="42" cy="51" r="2" fill="#c9b8f5"/><circle cx="52" cy="49" r="2" fill="#ffd36e"/>
-        <rect x="3" y="56" width="59" height="4" rx="2" fill="#f4d9e2"/>
+      <svg class="cake" viewBox="0 0 76 70" aria-hidden="true">
+        <path d="M38 2 L47 22 H29 Z" fill="#cfe5f6" stroke="#5a5358" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="38" cy="3" r="3.5" fill="#f5a9bc" stroke="#5a5358" stroke-width="1.5"/>
+        <circle cx="35" cy="14" r="1.6" fill="#fde8a6"/><circle cx="41" cy="18" r="1.6" fill="#f5a9bc"/>
+        <path d="M14 30 L18 14 L30 24 M62 30 L58 14 L46 24" fill="#b7b1b5" stroke="#5a5358" stroke-width="2.4" stroke-linejoin="round"/>
+        <ellipse cx="38" cy="46" rx="30" ry="21" fill="#b7b1b5" stroke="#5a5358" stroke-width="2.4"/>
+        <circle cx="27" cy="44" r="2.6" fill="#4f474c"/><circle cx="49" cy="44" r="2.6" fill="#4f474c"/>
+        <path d="M34 50 q2 2.5 4 0 q2 2.5 4 0" fill="none" stroke="#4f474c" stroke-width="1.8" stroke-linecap="round"/>
+        <ellipse cx="20" cy="51" rx="4" ry="2.4" fill="#f5a9bc" opacity=".8"/><ellipse cx="56" cy="51" rx="4" ry="2.4" fill="#f5a9bc" opacity=".8"/>
+        <path d="M6 46 h9 M6 51 h9 M61 46 h9 M61 51 h9" stroke="#5a5358" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
       <div>
         <p class="eyebrow" id="dates"></p>
@@ -501,7 +494,7 @@ const GoogleBase = {
   },
   clear() { overlays.forEach(o => o.setMap ? o.setMap(null) : (o.map = null)); overlays = []; },
   line(a, b, color, walk, faded) {
-    const opts = { path: [{ lat: a.lat, lng: a.lon }, { lat: b.lat, lng: b.lon }], map, strokeColor: walk ? "#8a6f86" : color, strokeWeight: 5, strokeOpacity: faded ? .45 : .95 };
+    const opts = { path: [{ lat: a.lat, lng: a.lon }, { lat: b.lat, lng: b.lon }], map, strokeColor: walk ? "#9a9297" : color, strokeWeight: 5, strokeOpacity: faded ? .45 : .95 };
     if (walk) Object.assign(opts, { strokeOpacity: 0, icons: [{ icon: { path: "M 0,-1 0,1", strokeOpacity: faded ? .5 : .9, strokeWeight: 4, scale: 2 }, offset: "0", repeat: "12px" }] });
     overlays.push(new google.maps.Polyline(opts));
   },
@@ -528,7 +521,7 @@ const OsmBase = {
   },
   clear() { overlays.forEach(o => o.remove()); overlays = []; },
   line(a, b, color, walk, faded) {
-    overlays.push(L.polyline([[a.lat, a.lon], [b.lat, b.lon]], { color: walk ? "#8a6f86" : color, weight: walk ? 4 : 5,
+    overlays.push(L.polyline([[a.lat, a.lon], [b.lat, b.lon]], { color: walk ? "#9a9297" : color, weight: walk ? 4 : 5,
       opacity: faded ? .45 : .95, dashArray: walk ? "1 9" : null, lineCap: "round" }).addTo(map));
   },
   marker(p, el, n) {
